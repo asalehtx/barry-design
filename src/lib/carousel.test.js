@@ -15,12 +15,20 @@ describe('wrapIndex', () => {
 
 describe('swipeStep', () => {
   it('maps a left swipe to next and a right swipe to previous', () => {
-    expect(swipeStep(300, 200)).toBe(1)
-    expect(swipeStep(200, 300)).toBe(-1)
+    expect(swipeStep({ x: 300, y: 400 }, { x: 200, y: 400 })).toBe(1)
+    expect(swipeStep({ x: 200, y: 400 }, { x: 300, y: 400 })).toBe(-1)
   })
 
   it('ignores movements shorter than the threshold', () => {
-    expect(swipeStep(300, 260)).toBe(0)
-    expect(swipeStep(300, 250)).toBe(1)
+    expect(swipeStep({ x: 300, y: 400 }, { x: 260, y: 400 })).toBe(0)
+    expect(swipeStep({ x: 300, y: 400 }, { x: 250, y: 400 })).toBe(1)
+  })
+
+  it('ignores a mostly vertical scroll that drifts sideways', () => {
+    expect(swipeStep({ x: 200, y: 600 }, { x: 140, y: 250 })).toBe(0)
+  })
+
+  it('ignores a diagonal where vertical movement equals horizontal', () => {
+    expect(swipeStep({ x: 300, y: 300 }, { x: 200, y: 200 })).toBe(0)
   })
 })

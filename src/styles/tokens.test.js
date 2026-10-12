@@ -84,6 +84,16 @@ describe('interaction states', () => {
     expect(rules.some((r) => r.atRule?.includes('prefers-reduced-motion: reduce'))).toBe(true)
   })
 
+  it('removes animation delays under reduced motion so content shows in its final state at once', () => {
+    const all = rules.filter((r) => r.atRule?.includes('prefers-reduced-motion') && r.selector.includes('*'))
+    expect(all.some((r) => /animation-delay:\s*0s !important/.test(r.body))).toBe(true)
+  })
+
+  it('drops the carousel button hover scale under reduced motion', () => {
+    const hover = rules.find((r) => r.atRule?.includes('prefers-reduced-motion') && r.selector.includes('.bd-carousel-btn:hover'))
+    expect(hover?.body).toMatch(/transform:\s*translateY\(-50%\) !important/)
+  })
+
   it('uses !important only inside the reduced-motion block', () => {
     const offenders = rules
       .filter((r) => r.body.includes('!important'))

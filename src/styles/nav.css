@@ -72,6 +72,12 @@
   visibility: visible;
   transform: translateY(0);
 }
+/* Keyboard users open the panel by focusing "Work"; it stays open while focus is inside it. */
+.bd-nav-links li:focus-within > .bd-megamenu-canvas {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
 
 .bd-megamenu-list-block {
   display: flex; flex-direction: column; gap: 1.25rem;

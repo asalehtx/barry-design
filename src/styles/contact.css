@@ -86,4 +86,7 @@
 
 @media (max-width: 768px) {
   .bd-contact-inner { grid-template-columns: 1fr; }
+  /* 16px stops iOS Safari zooming the page when a field is tapped. */
+  .bd-input,
+  .bd-textarea { font-size: 16px; }
 }

@@ -32,6 +32,12 @@ describe('navigation', () => {
     expect(value('.bd-megamenu-canvas', 'top')).toBe('var(--nav-h)')
   })
 
+  it('opens the megamenu for keyboard focus, not only hover', () => {
+    const rule = rules.find((r) => r.selector.includes(':focus-within') && r.selector.includes('.bd-megamenu-canvas'))
+    expect(rule?.body).toMatch(/visibility:\s*visible/)
+    expect(rule?.body).toMatch(/opacity:\s*1/)
+  })
+
   it('gives the hamburger a 44px target', () => {
     expect(px(value('.bd-hamburger', 'width'))).toBeGreaterThanOrEqual(44)
     expect(px(value('.bd-hamburger', 'height'))).toBeGreaterThanOrEqual(44)
@@ -89,5 +95,22 @@ describe('tap targets', () => {
     ['.bd-nav-cta', 'min-height'],
   ])('%s %s is at least 44px', (selector, prop) => {
     expect(px(value(selector, prop))).toBeGreaterThanOrEqual(44)
+  })
+})
+
+// iOS Safari zooms the page when a focused control's text is under 16px.
+describe('phone form controls', () => {
+  it('uses 16px text in the phone filter dropdown', () => {
+    expect(value('.bd-mobile-select', 'font-size', 'max-width: 1024px')).toBe('16px')
+  })
+
+  it.each(['.bd-input', '.bd-textarea'])('uses 16px text in %s on phones', (selector) => {
+    expect(value(selector, 'font-size', 'max-width: 768px')).toBe('16px')
+  })
+})
+
+describe('skip-link target', () => {
+  it('does not draw a focus ring around the whole page when the skip link focuses <main>', () => {
+    expect(value('#main:focus', 'outline')).toBe('none')
   })
 })

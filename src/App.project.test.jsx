@@ -44,12 +44,29 @@ describe('Project page', () => {
   it('moves on a swipe of 50px or more and ignores shorter ones', () => {
     renderProject('haii-keii')
     const carousel = screen.getByRole('region', { name: 'HAII KEII gallery' })
-    fireEvent.touchStart(carousel, { touches: [{ clientX: 300 }] })
-    fireEvent.touchEnd(carousel, { changedTouches: [{ clientX: 280 }] })
+    fireEvent.touchStart(carousel, { touches: [{ clientX: 300, clientY: 400 }] })
+    fireEvent.touchEnd(carousel, { changedTouches: [{ clientX: 280, clientY: 400 }] })
     expect(screen.getByText('1 / 5')).toBeInTheDocument()
-    fireEvent.touchStart(carousel, { touches: [{ clientX: 300 }] })
-    fireEvent.touchEnd(carousel, { changedTouches: [{ clientX: 200 }] })
+    fireEvent.touchStart(carousel, { touches: [{ clientX: 300, clientY: 400 }] })
+    fireEvent.touchEnd(carousel, { changedTouches: [{ clientX: 200, clientY: 400 }] })
     expect(screen.getByText('2 / 5')).toBeInTheDocument()
+  })
+
+  it('does not change image when a vertical scroll drifts sideways', () => {
+    renderProject('xo-juice-and-studio')
+    const carousel = screen.getByRole('region', { name: 'XO JUICE AND STUDIO gallery' })
+    fireEvent.touchStart(carousel, { touches: [{ clientX: 200, clientY: 600 }] })
+    fireEvent.touchEnd(carousel, { changedTouches: [{ clientX: 140, clientY: 250 }] })
+    expect(screen.getByText('1 / 5')).toBeInTheDocument()
+  })
+
+  it('ignores a cancelled touch', () => {
+    renderProject('xo-juice-and-studio')
+    const carousel = screen.getByRole('region', { name: 'XO JUICE AND STUDIO gallery' })
+    fireEvent.touchStart(carousel, { touches: [{ clientX: 300, clientY: 400 }] })
+    fireEvent.touchCancel(carousel)
+    fireEvent.touchEnd(carousel, { changedTouches: [{ clientX: 100, clientY: 400 }] })
+    expect(screen.getByText('1 / 5')).toBeInTheDocument()
   })
 
   it('has no carousel for a project without photos', () => {

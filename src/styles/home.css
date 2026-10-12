@@ -276,6 +276,8 @@
 @media (max-width: 1024px) {
   .bd-filter-bar { display: none; }
   .bd-mobile-filter-container { display: block; }
+  /* 16px stops iOS Safari zooming the page when the dropdown is tapped. */
+  .bd-mobile-select { font-size: 16px; }
 
   .bd-svc-grid { grid-template-columns: 1fr 1fr; }
   .bd-svc { border-right: none; border-bottom: 1px solid rgba(18, 18, 18, 0.07); }

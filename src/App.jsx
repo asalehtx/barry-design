@@ -17,6 +17,9 @@ import {
 } from "./data/projects";
 import { swipeStep, wrapIndex } from "./lib/carousel";
 
+// Route changes jump to the top; the global smooth scroll is for in-page anchors only.
+const scrollToTop = () => window.scrollTo({ top: 0, behavior: "instant" });
+
 // ─── REUSABLE OBSERVATION COMPONENT ──────────────────────────────────────────
 
 function ScrollReveal({ children, animationClass = "reveal-fade-up" }) {
@@ -520,7 +523,7 @@ export function ProjectCategory() {
   const category = findCategoryBySlug(slug);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    scrollToTop();
   }, [pathname]);
 
   if (!category) {
@@ -548,7 +551,7 @@ export function ProjectCategory() {
 }
 
 function Home() {
-  const { hash } = useLocation();
+  const { hash, key } = useLocation();
 
   useEffect(() => {
     if (hash) {
@@ -559,17 +562,18 @@ function Home() {
         }, 100);
       }
     } else {
-      window.scrollTo(0, 0);
+      scrollToTop();
     }
-  }, [hash]);
+  }, [hash, key]);
 
   return (
-    <main id="main">
+    <>
       <Hero />
-      <Work />
+      {/* Every link to #work (e.g. the menu's "All Projects") remounts the list, clearing the filter. */}
+      <Work key={hash === "#work" ? key : "work"} />
       <Statement />
       <Services />
-    </main>
+    </>
   );
 }
 
@@ -577,7 +581,7 @@ export function About() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    scrollToTop();
   }, [pathname]);
 
   return (
@@ -613,7 +617,7 @@ export function About() {
 
 function Carousel({ images, title }) {
   const [idx, setIdx] = useState(0);
-  const touchStartX = useRef(null);
+  const touchStart = useRef(null);
   const count = images.length;
 
   const go = (delta) => setIdx((i) => wrapIndex(i + delta, count));
@@ -628,14 +632,21 @@ function Carousel({ images, title }) {
     }
   };
 
+  // Single-finger gestures only; a second finger or a cancelled touch abandons the swipe.
   const handleTouchStart = (e) => {
-    touchStartX.current = e.touches[0].clientX;
+    touchStart.current =
+      e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
+  };
+
+  const handleTouchCancel = () => {
+    touchStart.current = null;
   };
 
   const handleTouchEnd = (e) => {
-    if (touchStartX.current === null) return;
-    const step = swipeStep(touchStartX.current, e.changedTouches[0].clientX);
-    touchStartX.current = null;
+    if (touchStart.current === null) return;
+    const touch = e.changedTouches[0];
+    const step = swipeStep(touchStart.current, { x: touch.clientX, y: touch.clientY });
+    touchStart.current = null;
     if (step !== 0) go(step);
   };
 
@@ -650,6 +661,7 @@ function Carousel({ images, title }) {
         onKeyDown={handleKeyDown}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
       >
         {images.map((src, i) => (
           <img
@@ -699,7 +711,7 @@ export function ProjectDetail({ id }) {
   const proj = findProject(id);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    scrollToTop();
   }, [id]);
 
   if (!proj) {
@@ -764,12 +776,14 @@ export default function BarryDesignStudio() {
         Skip to main content
       </a>
       <Nav />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/project/:id" element={<ProjectDetailRoute />} />
-        <Route path="/category/:slug" element={<ProjectCategory />} />
-      </Routes>
+      <main id="main" tabIndex={-1}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/project/:id" element={<ProjectDetailRoute />} />
+          <Route path="/category/:slug" element={<ProjectCategory />} />
+        </Routes>
+      </main>
       <Footer />
     </BrowserRouter>
   );
