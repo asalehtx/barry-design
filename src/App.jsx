@@ -4,13 +4,18 @@ import "./App.css";
 import {
   ALL_PROJECTS,
   CATEGORIES,
+  PROCUREMENT_COPY,
   PROJECTS,
   SERVICES,
   filterByCategory,
   findCategoryBySlug,
+  findProject,
   formatNum,
+  hasPhotos,
+  nextProject,
   splitByPhotos,
 } from "./data/projects";
+import { swipeStep, wrapIndex } from "./lib/carousel";
 
 // ─── REUSABLE OBSERVATION COMPONENT ──────────────────────────────────────────
 
@@ -644,34 +649,113 @@ function About() {
   );
 }
 
-function ProjectDetail() {
+function Carousel({ images, title }) {
+  const [idx, setIdx] = useState(0);
+  const touchStartX = useRef(null);
+  const count = images.length;
+
+  const go = (delta) => setIdx((i) => wrapIndex(i + delta, count));
+
+  const handleKeyDown = (e) => {
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      go(1);
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      go(-1);
+    }
+  };
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
+    const step = swipeStep(touchStartX.current, e.changedTouches[0].clientX);
+    touchStartX.current = null;
+    if (step !== 0) go(step);
+  };
+
+  return (
+    <div className="bd-carousel-wrap">
+      <div
+        className="bd-carousel"
+        role="region"
+        aria-roledescription="carousel"
+        aria-label={`${title} gallery`}
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        {images.map((src, i) => (
+          <img
+            key={src}
+            src={src}
+            alt={`${title} gallery image ${i + 1} of ${count}`}
+            className={`bd-carousel-img ${i === idx ? "active" : ""}`}
+            aria-hidden={i !== idx}
+          />
+        ))}
+
+        {count > 1 && (
+          <>
+            <button type="button" className="bd-carousel-btn prev" onClick={() => go(-1)} aria-label="Previous image">←</button>
+            <button type="button" className="bd-carousel-btn next" onClick={() => go(1)} aria-label="Next image">→</button>
+
+            <div className="bd-carousel-count" aria-live="polite">
+              {idx + 1} / {count}
+            </div>
+
+            <div className="bd-carousel-dots">
+              {images.map((src, i) => (
+                <button
+                  type="button"
+                  key={src}
+                  className={`bd-carousel-dot ${i === idx ? "active" : ""}`}
+                  onClick={() => setIdx(i)}
+                  aria-label={`Go to image ${i + 1}`}
+                  aria-current={i === idx}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Keyed by id so the carousel resets when moving between projects.
+function ProjectDetailRoute() {
   const { id } = useParams();
-  const { pathname } = useLocation();
-  const proj = PROJECTS.find((p) => p.id === id);
-  const [currentIdx, setCurrentIdx] = useState(0);
+  return <ProjectDetail key={id} id={id} />;
+}
+
+export function ProjectDetail({ id }) {
+  const proj = findProject(id);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    setCurrentIdx(0);
-  }, [pathname]);
+  }, [id]);
 
   if (!proj) {
     return (
-      <div style={{ padding: '10rem 2.5rem', textAlign: 'center', minHeight: '80vh' }}>
-        <h2 style={{ fontFamily: 'var(--display)', fontSize: '3rem' }}>Project Not Found</h2>
+      <div className="bd-not-found">
+        <h2 className="bd-not-found-title">Project Not Found</h2>
       </div>
     );
   }
 
-  const nextSlide = () => setCurrentIdx((prev) => (prev + 1) % proj.gallery.length);
-  const prevSlide = () => setCurrentIdx((prev) => (prev === 0 ? proj.gallery.length - 1 : prev - 1));
+  const next = nextProject(PROJECTS, proj.id);
 
   return (
-    <article style={{ background: 'var(--ink)', minHeight: '100vh' }}>
+    <article className="bd-page">
       <header className="bd-detail-header">
         <Link to="/" className="bd-detail-back">← Back to Home</Link>
         <h1 className="bd-detail-title">{proj.title}</h1>
-        
+
         <div className="bd-detail-meta">
           <div>
             <div className="bd-detail-meta-label">Year Completed</div>
@@ -692,43 +776,21 @@ function ProjectDetail() {
         </div>
       </header>
 
-      <div style={{ padding: '2.5rem' }}>
-        <div className="bd-carousel">
-          {proj.gallery && proj.gallery.map((imgUrl, idx) => (
-            <img 
-              key={idx} 
-              src={imgUrl} 
-              alt={`${proj.title} Gallery Image ${idx + 1}`} 
-              className={`bd-carousel-img ${idx === currentIdx ? 'active' : ''}`} 
-            />
-          ))}
-          
-          {proj.gallery && proj.gallery.length > 1 && (
-            <>
-              <button className="bd-carousel-btn prev" onClick={prevSlide} aria-label="Previous image">←</button>
-              <button className="bd-carousel-btn next" onClick={nextSlide} aria-label="Next image">→</button>
-            </>
-          )}
-          
-          <div className="bd-carousel-dots">
-            {proj.gallery && proj.gallery.map((_, idx) => (
-              <button 
-                key={idx} 
-                className={`bd-carousel-dot ${idx === currentIdx ? 'active' : ''}`} 
-                onClick={() => setCurrentIdx(idx)}
-                aria-label={`Go to slide ${idx + 1}`}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
+      {hasPhotos(proj) && <Carousel images={proj.gallery} title={proj.title} />}
 
       <div className="bd-detail-body">
         <p>{proj.desc}</p>
-        <p>
-          Beyond the initial spatial planning and concept generation, Barry Design Studio managed the complete procurement and installation process, ensuring every fixture, finish, and piece of furniture aligned perfectly with the design intent.
-        </p>
+        {proj.procurement && <p>{PROCUREMENT_COPY}</p>}
       </div>
+
+      {next && (
+        <nav className="bd-next" aria-label="Next project">
+          <Link to={`/project/${next.id}`} className="bd-next-link">
+            <span className="bd-next-label">Next project</span>
+            <span className="bd-next-title">{next.title}</span>
+          </Link>
+        </nav>
+      )}
     </article>
   );
 }
@@ -743,7 +805,7 @@ export default function BarryDesignStudio() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        <Route path="/project/:id" element={<ProjectDetail />} />
+        <Route path="/project/:id" element={<ProjectDetailRoute />} />
         <Route path="/category/:slug" element={<ProjectCategory />} />
       </Routes>
       <Footer />
