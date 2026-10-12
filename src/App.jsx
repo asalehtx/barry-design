@@ -1,198 +1,16 @@
 import { useEffect, useState, useRef } from "react";
 import { BrowserRouter, Routes, Route, Link, useParams, useLocation } from "react-router-dom";
 import "./App.css";
-
-// ─── DATA ────────────────────────────────────────────────────────────────────
-
-const PROJECTS = [
-  {
-    id: "xo-juice-and-studio",
-    num: "01",
-    category: "Health & Wellness",
-    title: "XO JUICE AND STUDIO",
-    year: "2026", 
-    location: "3201 N Shepherd Dr. #109 Houston, TX 77018",
-    area: "1,500 sf.",
-    tags: ["Interior Design", "Custom Fixtures", "Space Planning"],
-    img: "/images/projects/xo/xo-1.jpg", 
-    gallery: [
-      "/images/projects/xo/xo-1.jpg", 
-      "/images/projects/xo/xo-2.jpg", 
-      "/images/projects/xo/xo-3.jpg", 
-      "/images/projects/xo/xo-4.jpg", 
-      "/images/projects/xo/xo-5.jpg"  
-    ],
-    alt: "XO Juice Bar and Pilates Studio high-end interior rendering",
-    desc: "A vibrant 1,500 sq. ft. health and wellness hub combining a premium juice bar with a dedicated pilates reformer studio. The design features a signature natural tree and custom light fixtures that embody the brand identity, establishing a fluid layout where circulation gracefully defines user interaction."
-  },
-  {
-    id: "omg-burger",
-    num: "02",
-    category: "Restaurants & Bars",
-    title: "OMG BURGER",
-    year: "2026",
-    location: "5333 Westheimer Rd, Houston, TX 77056",
-    area: "3,500 sf.",
-    tags: ["Renovation", "F&B Design", "Modernization"],
-    img: "/images/projects/omg-burger/omg-burger-1.jpg",
-    gallery: [
-      "/images/projects/omg-burger/omg-burger-1.jpg",
-      "/images/projects/omg-burger/omg-burger-2.jpg",
-      "/images/projects/omg-burger/omg-burger-3.jpg",
-      "/images/projects/omg-burger/omg-burger-4.jpg",
-      "/images/projects/omg-burger/omg-burger-5.jpg"
-    ],
-    alt: "OMG Burger restaurant interior on Westheimer Rd",
-    desc: "A sweeping 3,500 sq. ft. renovation project on Westheimer Road in the Galleria area, repurposing an office building's ground floor into a restaurant and bar. The modernization features a striking, centrally placed rectangular communal table paired with an intuitive counter-service flow and a high-capacity commercial kitchen."
-  },
-  {
-    id: "greek-orthodox-cathedral",
-    num: "03",
-    category: "Institutional",
-    title: "GREEK ORTHODOX CATHEDRAL",
-    year: "2026",
-    location: "3511 Yoakum Blvd, Houston, TX 77006",
-    area: "Pending Verification",
-    tags: ["Architecture", "Cultural", "Houston"],
-    img: "/images/photos-coming-soon.png",
-    gallery: [
-      "/images/photos-coming-soon.png"
-    ],
-    alt: "Greek Orthodox Cathedral on Yoakum Blvd",
-    desc: "Located on Yoakum Blvd in Houston, this landmark project focuses on preserving rich cultural heritage while enhancing structural functionality and spatial community integration. (Full text details pending verification)."
-  },
-  {
-    id: "cyclone-anayas",
-    num: "04",
-    category: "Restaurants & Bars",
-    title: "CYCLONE ANAYAS",
-    year: "2026",
-    location: "3736 Westheimer Rd, Houston, TX 77027",
-    area: "5,000 sf.",
-    tags: ["High-End Design", "Tex-Mex", "River Oaks"],
-    img: "/images/projects/cyclone-anayas/cyclone-anayas-1.jpg",
-    gallery: [
-      "/images/projects/cyclone-anayas/cyclone-anayas-1.jpg",
-      "/images/projects/cyclone-anayas/cyclone-anayas-2.jpg",
-      "/images/projects/cyclone-anayas/cyclone-anayas-3.jpg",
-      "/images/projects/cyclone-anayas/cyclone-anayas-4.jpg"
-    ],
-    alt: "Cyclone Anayas Restaurant interior",
-    desc: "A sophisticated, new 5,000 sq. ft. Tex-Mex restaurant and bar situated in the exclusive River Oaks area. Built on the design ethos that 'every detail matters,' the space leans on custom luxury finishes to deliver an elevated, premium hospitality experience."
-  },
-  {
-    id: "haii-keii",
-    num: "05",
-    category: "Restaurants & Bars",
-    title: "HAII KEII",
-    year: "2026",
-    location: "3300 Kirby Dr Suite 9-A, Houston, TX 77098",
-    area: "3,800 sf.",
-    tags: ["Hospitality", "Sushi Restaurant", "Millwork"],
-    img: "/images/projects/haii-keii/haii-keii-1.jpg",
-    gallery: [
-      "/images/projects/haii-keii/haii-keii-1.jpg",
-      "/images/projects/haii-keii/haii-keii-2.jpg",
-      "/images/projects/haii-keii/haii-keii-3.jpg",
-      "/images/projects/haii-keii/haii-keii-4.jpg",
-      "/images/projects/haii-keii/haii-keii-5.jpg"
-    ],
-    alt: "Haii Keii Sushi Restaurant interior on Kirby Dr",
-    desc: "A stunning 3,800 sq. ft. high-end sushi restaurant located on Kirby Drive. The architectural vision brings a complete reimagining of modern elements, relying heavily on seamless spatial curvatures, warm ambient light modeling, and sophisticated materiality."
-  },
-  {
-    id: "flying-saucer-draught",
-    num: "06",
-    category: "Restaurants & Bars",
-    title: "FLYING SAUCER DRAUGHT",
-    year: "2026",
-    location: "DFW International Airport",
-    area: "6,000 sf.",
-    tags: ["Airport Retail", "Commercial", "DFW"],
-    img: "/images/photos-coming-soon.png",
-    gallery: [
-      "/images/photos-coming-soon.png"
-    ],
-    alt: "Flying Saucer Draught DFW Airport interior",
-    desc: "An expansive 6,000 sq. ft. commercial restaurant and bar layout designed specifically for the fast-paced environment of the Dallas-Fort Worth International Airport (DFW). Optimizes operational efficiency without compromising on aesthetics."
-  },
-  {
-    id: "bauhaus-houston",
-    num: "07",
-    category: "Nightlife",
-    title: "BAUHAUS HOUSTON",
-    year: "2023",
-    location: "1803 Pease St, Houston, TX 77003",
-    area: "4,000 sf.",
-    tags: ["Club Design", "Lighting", "Acoustics"],
-    img: "/images/projects/bauhaus/bauhaus-1.jpg",
-    gallery: [
-      "/images/projects/bauhaus/bauhaus-1.jpg",
-      "/images/projects/bauhaus/bauhaus-2.jpg",
-      "/images/projects/bauhaus/bauhaus-3.jpg",
-      "/images/projects/bauhaus/bauhaus-4.jpg"
-    ],
-    alt: "Bauhaus Houston Nightclub interior on Pease St",
-    desc: "A bold exploration of mood and shadow located at 1803 Pease St. For this 4,000 sq. ft. venue, our design strategy prioritized cutting-edge lighting design integrations, acoustic engineering, and an intuitive layout optimized for crowd flow."
-  },
-  {
-    id: "doubletree-by-hilton",
-    num: "08",
-    category: "Hospitality",
-    title: "DOUBLETREE BY HILTON",
-    year: "2026",
-    location: "12801 Northwest Fwy, Houston, TX 77040",
-    area: "7,800 sf.",
-    tags: ["Hotel Design", "Commercial Lounge", "Lobby"],
-    img: "/images/photos-coming-soon.png",
-    gallery: [
-      "/images/photos-coming-soon.png"
-    ],
-    alt: "Doubletree by Hilton interior spaces",
-    desc: "A comprehensive 7,800 sq. ft. hospitality design package executing a full spatial transformation. Focuses heavily on traffic routing, premium FF&E selections, and timeless aesthetic details that match standard brand benchmarks."
-  },
-  {
-    id: "airport-retail-spaces",
-    num: "09",
-    category: "Retail",
-    title: "AIRPORT RETAIL SPACES",
-    year: "2026",
-    location: "MSY - Louis Armstrong New Orleans International Airport",
-    area: "Varies",
-    tags: ["Commercial", "Retail Design", "Aviation"],
-    img: "/images/photos-coming-soon.png",
-    gallery: [
-      "/images/photos-coming-soon.png"
-    ],
-    alt: "Louis Armstrong New Orleans International Airport retail spaces",
-    desc: "A dynamic suite of retail builds located throughout the Louis Armstrong New Orleans International Airport (MSY). Spaces vary in footprint but remain strictly unified through smart programmatic design, high durability finishes, and specialized point-of-sale layout structures."
-  }
-];
-
-const SERVICES = [
-  {
-    num: "01",
-    title: "CONCEPT & STRATEGY",
-    desc: "Space programming, mood development, material direction — the full creative brief before a single line is drawn.",
-  },
-  {
-    num: "02",
-    title: "DESIGN & DOCUMENTATION",
-    desc: "Construction documents, FF&E specifications, finish schedules, and permit-ready drawing sets.",
-  },
-  {
-    num: "03",
-    title: "PROCUREMENT",
-    desc: "Vendor sourcing, trade pricing, and project management through delivery and installation.",
-  },
-  {
-    num: "04",
-    title: "BRAND ALIGNMENT",
-    desc: "Ensuring every spatial decision reinforces your brand identity — from signage to materiality to lighting mood.",
-  },
-];
-
-const slugify = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+import {
+  ALL_PROJECTS,
+  CATEGORIES,
+  PROJECTS,
+  SERVICES,
+  filterByCategory,
+  findCategoryBySlug,
+  formatNum,
+  splitByPhotos,
+} from "./data/projects";
 
 // ─── REUSABLE OBSERVATION COMPONENT ──────────────────────────────────────────
 
@@ -415,14 +233,13 @@ function Hero() {
   );
 }
 
-function ProjectRow({ proj }) {
+function ProjectRow({ proj, num }) {
   return (
     <ScrollReveal>
       <Link className="bd-proj" to={`/project/${proj.id}`} aria-label={`View project: ${proj.title}`}>
         <div className="bd-proj-panel-content">
-          
           <div className="bd-proj-info-block">
-            <div className="bd-proj-num">{proj.num}</div>
+            <div className="bd-proj-num">{num}</div>
             <div className="bd-proj-title">{proj.title}</div>
             <div className="bd-proj-tags">
               {proj.tags.map((t) => (
@@ -434,9 +251,9 @@ function ProjectRow({ proj }) {
           <div className="bd-proj-right">
             <div className="bd-proj-panel-bg" style={{ backgroundImage: `url(${proj.img})` }} aria-hidden="true" />
             <div className="bd-proj-panel-overlay" aria-hidden="true" />
-            
+
             <img className="bd-proj-img" src={proj.img} alt={proj.alt} loading="lazy" />
-            
+
             <div className="bd-proj-meta-trigger">
               <span className="bd-proj-year">{proj.year}</span>
               <span className="bd-proj-arrow">
@@ -444,29 +261,61 @@ function ProjectRow({ proj }) {
               </span>
             </div>
           </div>
-
         </div>
       </Link>
     </ScrollReveal>
   );
 }
 
-function Work() {
-  const categories = [
-    "All Projects",
-    "Health & Wellness",
-    "Restaurants & Bars",
-    "Nightlife",
-    "Hospitality",
-    "Retail",
-    "Institutional"
-  ];
+function InProgressList({ projects }) {
+  if (projects.length === 0) return null;
 
-  const [activeCat, setActiveCat] = useState("All Projects");
+  return (
+    <section className="bd-inprogress" aria-labelledby="inprogress-heading">
+      <h3 className="bd-inprogress-label" id="inprogress-heading">Also in progress</h3>
+      <ul className="bd-inprogress-list">
+        {projects.map((p) => (
+          <li key={p.id}>
+            <Link className="bd-inprogress-row" to={`/project/${p.id}`}>
+              <span className="bd-inprogress-title">{p.title}</span>
+              <span className="bd-inprogress-meta">{p.category}</span>
+              <span className="bd-inprogress-meta">{p.location}</span>
+              <span className="bd-inprogress-meta">{p.area}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
-  const filteredProjects = activeCat === "All Projects"
-    ? PROJECTS
-    : PROJECTS.filter((p) => p.category === activeCat);
+// Photographed projects as image rows, the rest as a compact text list.
+function ProjectLists({ projects }) {
+  if (projects.length === 0) {
+    return <p className="bd-empty-state">No projects in this category yet.</p>;
+  }
+
+  const { photographed, inProgress } = splitByPhotos(projects);
+
+  return (
+    <>
+      {photographed.length > 0 && (
+        <div className="bd-projects">
+          {photographed.map((p, i) => (
+            <ProjectRow key={p.id} proj={p} num={formatNum(i)} />
+          ))}
+        </div>
+      )}
+      <InProgressList projects={inProgress} />
+    </>
+  );
+}
+
+const FILTERS = [ALL_PROJECTS, ...CATEGORIES];
+
+export function Work({ projects = PROJECTS }) {
+  const [activeCat, setActiveCat] = useState(ALL_PROJECTS);
+  const visible = filterByCategory(projects, activeCat);
 
   return (
     <section className="bd-work" id="work" aria-labelledby="work-heading">
@@ -476,63 +325,40 @@ function Work() {
             Selected Work
           </div>
         </ScrollReveal>
-        
-        <ScrollReveal>
-          <ul className="bd-filter-bar" role="tablist" aria-label="Project category filters" style={{ marginBottom: '2rem' }}>
-            {categories.map((cat) => (
-              <li key={cat} role="presentation">
-                {cat === "All Projects" ? (
-                  <button
-                    role="tab"
-                    aria-selected={activeCat === cat}
-                    className={`bd-filter-btn ${activeCat === cat ? "active" : ""}`}
-                    onClick={() => setActiveCat(cat)}
-                  >
-                    {cat}
-                  </button>
-                ) : (
-                  <Link 
-                    to={`/category/${slugify(cat)}`}
-                    className="bd-filter-btn"
-                    style={{ textDecoration: 'none', display: 'inline-block' }}
-                  >
-                    {cat}
-                  </Link>
-                )}
-              </li>
-            ))}
-          </ul>
-        </ScrollReveal>
 
-        <ScrollReveal>
-          <div className="bd-mobile-filter-container">
-            <select 
-              className="bd-mobile-select" 
-              value={activeCat} 
-              onChange={(e) => {
-                const val = e.target.value;
-                if (val === "All Projects") {
-                  setActiveCat(val);
-                } else {
-                  window.location.href = `/category/${slugify(val)}`;
-                }
-              }}
-              aria-label="Filter selected work by project category"
-            >
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
-        </ScrollReveal>
+        <ul className="bd-filter-bar" aria-label="Filter projects by category">
+          {FILTERS.map((cat) => (
+            <li key={cat}>
+              <button
+                type="button"
+                className={`bd-filter-btn ${activeCat === cat ? "active" : ""}`}
+                aria-pressed={activeCat === cat}
+                onClick={() => setActiveCat(cat)}
+              >
+                {cat}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        <div className="bd-mobile-filter-container">
+          <select
+            className="bd-mobile-select"
+            value={activeCat}
+            onChange={(e) => setActiveCat(e.target.value)}
+            aria-label="Filter projects by category"
+          >
+            {FILTERS.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
-      
-      <div className="bd-projects" key={activeCat}>
-        {filteredProjects.map((p) => (
-          <ProjectRow key={p.id} proj={p} />
-        ))}
+
+      <div className="bd-work-lists" key={activeCat}>
+        <ProjectLists projects={visible} />
       </div>
     </section>
   );
@@ -703,29 +529,18 @@ function Footer() {
 
 // ─── ROUTE COMPONENTS ─────────────────────────────────────────────────────────
 
-function ProjectCategory() {
+export function ProjectCategory() {
   const { slug } = useParams();
   const { pathname } = useLocation();
-
-  const categories = [
-    "Health & Wellness",
-    "Restaurants & Bars",
-    "Nightlife",
-    "Hospitality",
-    "Retail",
-    "Institutional"
-  ];
-
-  const currentCategory = categories.find(cat => slugify(cat) === slug);
-  const filteredProjects = PROJECTS.filter(p => slugify(p.category) === slug);
+  const category = findCategoryBySlug(slug);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  if (!currentCategory) {
+  if (!category) {
     return (
-      <div className="bd-category-view-fallback">
+      <div className="bd-page">
         <header className="bd-detail-header">
           <Link to="/" className="bd-detail-back">← Back to Home</Link>
           <h1 className="bd-detail-title">Category Not Found</h1>
@@ -735,26 +550,14 @@ function ProjectCategory() {
   }
 
   return (
-    <article className="bd-category-view-canvas">
+    <article className="bd-page">
       <header className="bd-detail-header">
         <Link to="/" className="bd-detail-back">← Back to Home</Link>
-        <div className="bd-category-view-eyebrow">Project Typology</div>
-        <h1 className="bd-detail-title">{currentCategory.toUpperCase()}</h1>
+        <div className="bd-eyebrow">Project Typology</div>
+        <h1 className="bd-detail-title">{category.toUpperCase()}</h1>
       </header>
 
-      <div className="bd-category-view-list">
-        {filteredProjects.length > 0 ? (
-          <div className="bd-projects">
-            {filteredProjects.map((p) => (
-              <ProjectRow key={p.id} proj={p} />
-            ))}
-          </div>
-        ) : (
-          <div className="bd-category-empty-state">
-            <p>No selected works are currently registered under this category format.</p>
-          </div>
-        )}
-      </div>
+      <ProjectLists projects={filterByCategory(PROJECTS, category)} />
     </article>
   );
 }
