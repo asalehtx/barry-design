@@ -24,37 +24,25 @@ function ScrollReveal({ children, animationClass = "reveal-fade-up" }) {
   const [hasRevealed, setHasRevealed] = useState(false);
 
   useEffect(() => {
-    if (!elementRef.current || hasRevealed) return;
+    const node = elementRef.current;
+    if (!node || hasRevealed) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setHasRevealed(true);
-          observer.unobserve(entry.target);
+          observer.disconnect();
         }
       },
-      {
-        root: null,
-        threshold: 0.15,
-        rootMargin: "0px 0px -20px 0px"
-      }
+      { root: null, threshold: 0.15, rootMargin: "0px 0px -20px 0px" }
     );
 
-    observer.observe(elementRef.current);
-
-    return () => {
-      if (elementRef.current) {
-        observer.disconnect();
-      }
-    };
+    observer.observe(node);
+    return () => observer.disconnect();
   }, [hasRevealed]);
 
   return (
-    <div 
-      ref={elementRef} 
-      className={`${animationClass} ${hasRevealed ? "visible" : ""}`}
-      style={{ width: "100%" }}
-    >
+    <div ref={elementRef} className={`bd-reveal ${animationClass} ${hasRevealed ? "visible" : ""}`}>
       {children}
     </div>
   );
@@ -65,30 +53,27 @@ function ScrollReveal({ children, animationClass = "reveal-fade-up" }) {
 function Logo() {
   return (
     <div className="bd-logo-link">
-      <img 
-        src="/images/logo.png" 
-        alt="Barry Design Studio" 
-        className="bd-logo-img"
-      />
+      <img src="/images/logo.png" alt="Barry Design Studio" className="bd-logo-img" />
     </div>
   );
 }
 
-function Nav() {
+// Categories without photos show text only in the preview panel.
+const MEGAMENU_ITEMS = [
+  { name: "All Projects", path: "/#work", img: "/images/projects/haii-keii/haii-keii-1.jpg", sub: "Complete Studio Index" },
+  { name: "Health & Wellness", path: "/category/health-wellness", img: "/images/projects/xo/xo-1.jpg", sub: "Studio & Spa Planning" },
+  { name: "Restaurants & Bars", path: "/category/restaurants-bars", img: "/images/projects/cyclone-anayas/cyclone-anayas-1.jpg", sub: "Hospitality & Dining" },
+  { name: "Nightlife", path: "/category/nightlife", img: "/images/projects/bauhaus/bauhaus-1.jpg", sub: "Clubs & Lounge Acoustics" },
+  { name: "Hospitality", path: "/category/hospitality", img: null, sub: "Hotels & Commercial Lounges" },
+  { name: "Retail", path: "/category/retail", img: null, sub: "Airport & Storefront Brand Builds" },
+  { name: "Institutional", path: "/category/institutional", img: null, sub: "Cultural Landmark Structures" },
+];
+
+export function Nav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMegamenuVisible, setIsMegamenuVisible] = useState(false);
-  const [activePreview, setActivePreview] = useState(0); 
+  const [activePreview, setActivePreview] = useState(0);
   const timeoutRef = useRef(null);
-
-  const megamenuItems = [
-    { name: "All Projects", path: "/#work", img: "/images/projects/omg-burger/omg-burger-1.jpg", sub: "Complete Studio Index" },
-    { name: "Health & Wellness", path: "/category/health-wellness", img: "/images/projects/xo/xo-1.jpg", sub: "Studio & Spa Planning" },
-    { name: "Restaurants & Bars", path: "/category/restaurants-bars", img: "/images/projects/omg-burger/omg-burger-1.jpg", sub: "Hospitality & Dining" },
-    { name: "Nightlife", path: "/category/nightlife", img: "/images/projects/bauhaus/bauhaus-1.jpg", sub: "Clubs & Lounge Acoustics" },
-    { name: "Hospitality", path: "/category/hospitality", img: "/images/photos-coming-soon.png", sub: "Hotels & Commercial Lounges" },
-    { name: "Retail", path: "/category/retail", img: "/images/photos-coming-soon.png", sub: "Airport & Storefront Brand Builds" },
-    { name: "Institutional", path: "/category/institutional", img: "/images/photos-coming-soon.png", sub: "Cultural Landmark Structures" }
-  ];
 
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -98,7 +83,7 @@ function Nav() {
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setIsMegamenuVisible(false);
-    }, 300); 
+    }, 300);
   };
 
   useEffect(() => {
@@ -114,31 +99,30 @@ function Nav() {
   };
 
   const closeMenu = () => setIsMenuOpen(false);
+  const active = MEGAMENU_ITEMS[activePreview];
 
   return (
     <>
       <nav className="bd-nav" aria-label="Main navigation">
-        <Link to="/" onClick={closeMenu} aria-label="Barry Design Studio Home" style={{ textDecoration: 'none' }}>
+        <Link to="/" onClick={closeMenu} aria-label="Barry Design Studio Home">
           <Logo />
         </Link>
-        
+
         <ul className="bd-nav-links">
-          <li 
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
+          <li onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <Link to="/#work">Work</Link>
-            
+
             <div className={`bd-megamenu-canvas ${isMegamenuVisible ? "active" : ""}`}>
               <div className="bd-megamenu-list-block">
                 <div className="bd-megamenu-label">Project Typologies</div>
                 <div className="bd-megamenu-links-grid">
-                  {megamenuItems.map((item, idx) => (
+                  {MEGAMENU_ITEMS.map((item, idx) => (
                     <Link
-                      key={idx}
+                      key={item.name}
                       to={item.path}
                       className="bd-megamenu-link"
                       onMouseEnter={() => setActivePreview(idx)}
+                      onFocus={() => setActivePreview(idx)}
                       onClick={() => setIsMegamenuVisible(false)}
                     >
                       {item.name}
@@ -147,37 +131,39 @@ function Nav() {
                 </div>
               </div>
 
-              <div className="bd-megamenu-display-canvas">
-                {megamenuItems.map((item, idx) => (
+              <div className="bd-megamenu-display-canvas" data-testid="megamenu-display">
+                {MEGAMENU_ITEMS.filter((item) => item.img).map((item) => (
                   <div
-                    key={idx}
-                    className={`bd-megamenu-preview-img ${activePreview === idx ? 'active' : ''}`}
-                    style={{ backgroundImage: `url(${item.img})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                    key={item.name}
+                    className={`bd-megamenu-preview-img ${active.name === item.name ? "active" : ""}`}
+                    style={{ backgroundImage: `url(${item.img})` }}
                     aria-hidden="true"
                   />
                 ))}
                 <div className="bd-megamenu-display-text">
-                  <div className="bd-megamenu-display-h3">{megamenuItems[activePreview].name.toUpperCase()}</div>
-                  <div className="bd-megamenu-display-sub">{megamenuItems[activePreview].sub}</div>
+                  <div className="bd-megamenu-display-h3">{active.name.toUpperCase()}</div>
+                  <div className="bd-megamenu-display-sub">{active.sub}</div>
                 </div>
               </div>
             </div>
           </li>
-          
+
           <li><Link to="/about">About</Link></li>
           <li><Link to="/#services">Services</Link></li>
-          <li><a href="#contact" onClick={scrollToContact} style={{ cursor: "pointer" }}>Contact</a></li>
+          <li><a href="#contact" onClick={scrollToContact}>Contact</a></li>
         </ul>
-        
+
         <div className="bd-nav-actions">
           <a href="#contact" className="bd-nav-cta" onClick={scrollToContact}>
             Get in Touch
           </a>
-          
-          <button 
-            className={`bd-hamburger ${isMenuOpen ? "open" : ""}`} 
-            onClick={() => setIsMenuOpen(!isMenuOpen)} 
+
+          <button
+            type="button"
+            className={`bd-hamburger ${isMenuOpen ? "open" : ""}`}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle Menu"
+            aria-expanded={isMenuOpen}
           >
             <span></span>
             <span></span>
@@ -186,11 +172,11 @@ function Nav() {
       </nav>
 
       <div className={`bd-mobile-menu ${isMenuOpen ? "active" : ""}`}>
-        <ul style={{ listStyle: 'none', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-          <li><Link to="/#work" onClick={closeMenu} style={{ fontFamily: 'var(--display)', fontSize: '3.5rem', color: 'var(--bone)', textDecoration: 'none', letterSpacing: '0.05em' }}>Work</Link></li>
-          <li><Link to="/about" onClick={closeMenu} style={{ fontFamily: 'var(--display)', fontSize: '3.5rem', color: 'var(--bone)', textDecoration: 'none', letterSpacing: '0.05em' }}>About</Link></li>
-          <li><Link to="/#services" onClick={closeMenu} style={{ fontFamily: 'var(--display)', fontSize: '3.5rem', color: 'var(--bone)', textDecoration: 'none', letterSpacing: '0.05em' }}>Services</Link></li>
-          <li><a href="#contact" onClick={scrollToContact} style={{ fontFamily: 'var(--display)', fontSize: '3.5rem', color: 'var(--bone)', textDecoration: 'none', letterSpacing: '0.05em' }}>Contact</a></li>
+        <ul className="bd-mobile-menu-list">
+          <li><Link to="/#work" onClick={closeMenu} className="bd-mobile-menu-link">Work</Link></li>
+          <li><Link to="/about" onClick={closeMenu} className="bd-mobile-menu-link">About</Link></li>
+          <li><Link to="/#services" onClick={closeMenu} className="bd-mobile-menu-link">Services</Link></li>
+          <li><a href="#contact" onClick={scrollToContact} className="bd-mobile-menu-link">Contact</a></li>
         </ul>
       </div>
     </>
@@ -204,12 +190,10 @@ function Hero() {
       <div className="bd-hero-gradient" aria-hidden="true" />
       <div className="bd-hero-noise" aria-hidden="true" />
       <div className="bd-hero-rule-v" aria-hidden="true" />
-      
+
       <p className="bd-hero-scroll" aria-hidden="true">scroll</p>
-      
-      <ScrollReveal>
-        <p className="bd-hero-eyebrow">Houston, TX · Architectural Design Studio</p>
-      </ScrollReveal>
+
+      <p className="bd-hero-eyebrow">Houston, TX · Architectural Design Studio</p>
 
       <h1 className="bd-hero-h1">
         <span>WE CREATE</span>
@@ -217,23 +201,19 @@ function Hero() {
         <span>SPACES</span>
       </h1>
 
-      <ScrollReveal>
-        <p className="bd-hero-sub" style={{ animation: "none" }}>
-          By combining spatial precision with artistic sensibility, we help
-          clients align, structure and elevate their built environments.
-        </p>
-      </ScrollReveal>
+      <p className="bd-hero-sub">
+        By combining spatial precision with artistic sensibility, we help
+        clients align, structure and elevate their built environments.
+      </p>
 
-      <ScrollReveal>
-        <div className="bd-hero-btns" style={{ animation: "none" }}>
-          <Link to="/#work" className="bd-btn-fill">
-            View Projects
-          </Link>
-          <Link to="/about" className="bd-btn-ghost">
-            Our Process
-          </Link>
-        </div>
-      </ScrollReveal>
+      <div className="bd-hero-btns">
+        <Link to="/#work" className="bd-btn-fill">
+          View Projects
+        </Link>
+        <Link to="/about" className="bd-btn-ghost">
+          Our Process
+        </Link>
+      </div>
     </section>
   );
 }
@@ -584,7 +564,7 @@ function Home() {
   }, [hash]);
 
   return (
-    <main>
+    <main id="main">
       <Hero />
       <Work />
       <Statement />
@@ -593,7 +573,7 @@ function Home() {
   );
 }
 
-function About() {
+export function About() {
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -601,49 +581,31 @@ function About() {
   }, [pathname]);
 
   return (
-    <article style={{ background: 'var(--ink)', minHeight: '100vh' }}>
+    <article className="bd-page">
       <header className="bd-detail-header">
         <Link to="/" className="bd-detail-back">← Back to Home</Link>
-        <h1 className="bd-detail-title">ABOUT US</h1>
+        <div className="bd-eyebrow">Founder, Barry Design Studio</div>
+        <h1 className="bd-detail-title">YOUSEF ELBARRY</h1>
       </header>
 
-      <div style={{ padding: '0 2.5rem' }}>
-        <img 
-          src="/images/about-studio.webp" 
-          alt="Barry Design Studio Workspace" 
-          className="bd-detail-hero-img" 
-          style={{ height: '50vh' }}
-        />
+      <div className="bd-about-hero">
+        <img src="/images/about-studio.webp" alt="Barry Design Studio workspace" className="bd-about-hero-img" />
       </div>
 
-      <div className="bd-about-content" style={{ maxWidth: '100%', padding: '4rem 0 0' }}>
+      <div className="bd-about-grid">
+        <div className="bd-about-text-block">
+          <blockquote className="bd-founder-quote">
+            “At the age of 4, I built my first Lego bridge to allow my toy cars to cross over a “river” on the carpet in my room. A Couple of years after that, I built my first house with cigarette packs glued together. At the time all the empty lots around my neighborhood were being built. I was captivated by the huge slabs of concrete and brick walls, workers and the noise of their machines. At the age of 10 I decided to be a Designer.”
+          </blockquote>
 
-        {/* Shifting text to left block column, portrait asset to right block column */}
-        <div className="bd-about-grid" style={{ maxWidth: '1100px', margin: '2rem auto 0', padding: '0 2.5rem' }}>
-          
-          <div className="bd-about-text-block">
-            <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Founder</h2>
-            
-            
-            <div className="bd-founder-quote" style={{ borderLeft: 'none', borderRight: '2px solid var(--hi)', paddingLeft: 0, paddingRight: '1.5rem', textAlign: 'right' }}>
-              “At the age of 4, I built my first Lego bridge to allow my toy cars to cross over a “river” on the carpet in my room. A Couple of years after that, I built my first house with cigarette packs glued together. At the time all the empty lots around my neighborhood were being built. I was captivated by the huge slabs of concrete and brick walls, workers and the noise of their machines. At the age of 10 I decided to be a Designer.”
-            </div>
-            
-            <p style={{ textAlign: 'justify' }}>Although born in the state of Tennessee, Cairo, Egypt is my hometown where I was raised and educated. There, I studied in the School of Engineering, Department of Architecture and Environmental Design at AAST University.</p>
-            <p style={{ textAlign: 'justify' }}>I earned my bachelor's degree, which was accredited and partnered with The Royal Institute of British Architects, guaranteeing a high standard of education and recognition. This comprehensive program exposed me to various disciplines within the field of building science, including civil engineering, structural design, MEP systems, project management, and beyond.</p>
-          <h4 style={{ color: 'var(--hi)' }}>Yousef Elbarry</h4>
-          </div>
-
-          <div>
-            <img 
-              src="/images/yousef-elbarry-portrait.png" 
-              alt="Yousef Elbarry" 
-              className="bd-about-img" 
-            />
-          </div>
-
+          <p>Although born in the state of Tennessee, Cairo, Egypt is my hometown where I was raised and educated. There, I studied in the School of Engineering, Department of Architecture and Environmental Design at AAST University.</p>
+          <p>I earned my bachelor's degree, which was accredited and partnered with The Royal Institute of British Architects, guaranteeing a high standard of education and recognition. This comprehensive program exposed me to various disciplines within the field of building science, including civil engineering, structural design, MEP systems, project management, and beyond.</p>
+          <p className="bd-founder-name">Yousef Elbarry</p>
         </div>
 
+        <div>
+          <img src="/images/yousef-elbarry-portrait.png" alt="Yousef Elbarry" className="bd-about-img" />
+        </div>
       </div>
     </article>
   );
@@ -798,7 +760,7 @@ export function ProjectDetail({ id }) {
 export default function BarryDesignStudio() {
   return (
     <BrowserRouter>
-      <a href="#work" className="sr-only" style={{ position: "absolute", left: -9999 }}>
+      <a href="#main" className="bd-skip-link">
         Skip to main content
       </a>
       <Nav />
