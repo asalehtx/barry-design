@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hear Hear Agency – Digital Schematic Presentation</title>
+<style>
+  /* Imported fonts based on Hear Hear design assets */
+  @import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Poppins:wght@600;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #121212; /* Portfolio background color */
+    font-family: 'Jost', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 60px 24px;
+    min-height: 100vh;
+  }
+
+  h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 4px;
+    text-align: center;
+  }
+
+  .carousel-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    width: 100%;
+    max-width: 800px; /* Wider canvas optimized for professional landscape presentation slides */
+  }
+
+  .slide-label {
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #888;
+    align-self: flex-start;
+  }
+
+  /* ── SHARED SLIDE STRUCTURE ── */
+  .slide {
+    width: 100%;
+    aspect-ratio: 16 / 10; /* Clean architectural layout geometry */
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid #333; /* Corporate presentation card framing border */
+    background: #1a1a1a; /* Portfolio alt background */
+  }
+
+  .slide-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 6% 7%;
+  }
+
+  /* ── SHARED CORE REUSABLE UI ELEMENTS ── */
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .agency-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border: 1px solid rgba(0, 123, 255, 0.5);
+    border-radius: 100px;
+    width: fit-content;
+  }
+
+  .agency-badge .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #007bff; /* Portfolio primary anchor */
+  }
+
+  .agency-badge span {
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #007bff;
+  }
+
+  .slide-category {
+    font-family: 'Jost', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: #888;
+    text-transform: uppercase;
+  }
+
+  .footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 3%;
+  }
+
+  .slide-counter {
+    font-size: 14px;
+    font-weight: 400;
+    color: #888;
+    letter-spacing: 0.08em;
+  }
+
+  .slide-counter strong {
+    color: #007bff;
+    font-weight: 600;
+  }
+
+  .client-tag {
+    font-size: 12px;
+    font-weight: 400;
+    color: #666;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── SLIDE 1: TITLE/COVER ── */
+  .slide-1 .bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,123,255,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,123,255,0.06) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .slide-1 .glow {
+    position: absolute;
+    bottom: -150px;
+    left: -100px;
+    width: 550px;
+    height: 550px;
+    background: radial-gradient(circle, rgba(0,123,255,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .slide-1 .main-body {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  .slide-1 .title-pre {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    color: #007bff;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .slide-1 .headline {
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 700;
+    line-height: 1.15;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+  }
+
+  .slide-1 .headline span {
+    color: #007bff;
+  }
+
+  .slide-1 .subtitle {
+    font-size: 16px;
+    color: #aaa;
+    margin-top: 16px;
+    font-weight: 300;
+    max-width: 540px;
+    line-height: 1.5;
+  }
+
+  /* ── SLIDE 2: DIAGNOSIS (GRID LAYOUT) ── */
+  .slide-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(22px, 3.5vw, 28px);
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+  }
+
+  .grid-3-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  .card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .card-icon {
+    width: 32px;
+    height: 32px;
+    color: #007bff;
+  }
+
+  .card-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .card-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .card-body {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #aaa;
+    font-weight: 300;
+  }
+
+  /* ── SLIDE 3: SOLUTION (ROW STEPS) ── */
+  .solution-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.01);
+    border-left: 2px solid #007bff;
+    padding: 14px 20px;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .sol-num {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: rgba(0, 123, 255, 0.4);
+    line-height: 1;
+    margin-top: 2px;
+  }
+
+  .sol-text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sol-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .sol-body {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #aaa;
+  }
+
+  /* ── SLIDE 4: PHASES (CHRONOLOGICAL FLOW) ── */
+  .phases-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    position: relative;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  .phase-node {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+  }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .phase-step {
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .phase-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .phase-desc {
+    font-size: 12px;
+    line-height: 1.5;
+    color: #aaa;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 10px;
+  }
+
+  /* ── SLIDE 5: INVESTMENT ACCENT ── */
+  .slide-5 {
+    background: #007bff; /* Primary background takeover style */
+    border: none;
+  }
+
+  .slide-5 .noise {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+    opacity: 0.25;
+  }
+
+  .slide-5 .slide-content {
+    padding: 6% 8%;
+  }
+
+  .split-investment {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 40px;
+    margin-top: auto;
+    margin-bottom: auto;
+    align-items: center;
+  }
+
+  .inv-left {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    padding-right: 20px;
+  }
+
+  .inv-label {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .inv-price {
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(40px, 6vw, 54px);
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+  }
+
+  .inv-note {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .inv-right {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .inv-right-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 4px;
+  }
+
+  .bullet-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    list-style: none;
+  }
+
+  .bullet-list li {
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .bullet-list li::before {
+    content: "—";
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .roi-box {
+    margin-top: 12px;
+    font-size: 12px;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.4;
+  }
+
+  /* ── SLIDE 6: NEXT STEPS ── */
+  .slide-6 .grid-3-col .card {
+    background: rgba(255, 255, 255, 0.01);
+    border-top: 3px solid #007bff;
+    gap: 8px;
+    padding-top: 24px;
+  }
+
+  .step-num {
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #007bff;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  .slide-6 .card-title {
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+
+  .closing-bar {
+    text-align: center;
+    font-size: 13px;
+    color: #aaa;
+    font-weight: 400;
+    background: rgba(0, 123, 255, 0.05);
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px dashed rgba(0, 123, 255, 0.2);
+    margin-top: 16px;
+  }
+
+  /* ── EXPORT ACTION TOOLS ── */
+  .dl-hint {
+    font-size: 13px;
+    color: #666;
+    letter-spacing: 0.05em;
+    text-align: center;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Hear Hear Agency — Digital Schematic Presentation</h1>
+
+<div class="carousel-wrapper">
+
+  <!-- SLIDE 1 -->
+  <div class="slide-label">Slide 01 of 06</div>
+  <div class="slide slide-1">
+    <div class="bg-grid"></div>
+    <div class="glow"></div>
+    <div class="slide-content">
+      <div class="header-row">
+        <div class="agency-badge">
+          <span class="dot"></span>
+          <span>Hear Hear Agency</span>
+        </div>
+        <div class="slide-category">Proposal Concept</div>
+      </div>
+      
+      <div class="main-body">
+        <div class="title-pre">Digital Schematic Presentation</div>
+        <div class="headline">Physical Mastery.<br>Digital <span>Friction.</span></div>
+        <div class="subtitle">A digital presence redesign & search optimization proposal for Barry Design Studio.</div>
+      </div>
+
+      <div class="footer-row">
+        <span class="slide-counter"><strong>01</strong> / 06</span>
+        <span class="client-tag">Prepared for: Barry Design Studio</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2 -->
+  <div class="slide-label">Slide 02 of 06</div>
+  <div class="slide">
+    <div class="slide-content">
+      <div class="header-row">
+        <div class="agency-badge">
+          <span class="dot"></span>
+          <span>Hear Hear Agency</span>
+        </div>
+        <div class="slide-category">The Strategy</div>
+      </div>
+
+      <div class="slide-title">The Structural Diagnosis<br><span style="font-size:14px; font-weight:400; color:#666; font-family:'Jost'; letter-spacing:0.05em; text-transform:uppercase;">Where the Digital Foundation is Cracking</span></div>
+
+      <div class="grid-3-col">
+        <div class="card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </div>
+          <div class="card-title">The Invisible Portfolio</div>
+          <div class="card-body">Beautiful imagery — zero semantic, indexable text. Google and AI search engines are completely blind to your project scope, location, and specializations.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+          </div>
+          <div class="card-title">The Speed Penalty</div>
+          <div class="card-body">Unoptimized, high-res image files are crushing mobile load times. Busy developers and luxury clients bounce before your work ever loads.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          </div>
+          <div class="card-title">The Dead-End Path</div>
+          <div class="card-body">A passive contact page treating high-value project inquiries like a generic support ticket. No qualification, no intent capture, no conversion pathway.</div>
+        </div>
+      </div>
+
+      <div class="footer-row">
+        <span class="slide-counter"><strong>02</strong> / 06</span>
+        <span class="client-tag">Barry Design Studio</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3 -->
+  <div class="slide-label">Slide 03 of 06</div>
+  <div class="slide">
+    <div class="slide-content">
+      <div class="header-row">
+        <div class="agency-badge">
+          <span class="dot"></span>
+          <span>Hear Hear Agency</span>
+        </div>
+        <div class="slide-category">The Execution</div>
+      </div>
+
+      <div class="slide-title">The Schematic Solution<br><span style="font-size:14px; font-weight:400; color:#666; font-family:'Jost'; letter-spacing:0.05em; text-transform:uppercase;">Merging Aesthetic Purism with Search Performance</span></div>
+
+      <div style="display:flex; flex-direction:column; gap:12px; margin-top:auto; margin-bottom:auto;">
+        <div class="solution-row">
+          <div class="sol-num">01</div>
+          <div class="sol-text-group">
+            <div class="sol-title">Responsive Portfolio Engine</div>
+            <div class="sol-body">Layouts engineered specifically for large-format architectural photography. Optimized to load instantly on an iPhone 16 Pro or a studio desktop — without sacrificing visual impact.</div>
+          </div>
+        </div>
+        <div class="solution-row">
+          <div class="sol-num">02</div>
+          <div class="sol-text-group">
+            <div class="sol-title">Contextual Image SEO</div>
+            <div class="sol-body">Every project page backed by clean HTML, structural schema, and descriptive typography that tells Google exactly where and what you built — making your work discoverable.</div>
+          </div>
+        </div>
+        <div class="solution-row">
+          <div class="sol-num">03</div>
+          <div class="sol-text-group">
+            <div class="sol-title">The Intent Pathway</div>
+            <div class="sol-body">A seamless onboarding flow that qualifies leads by project scope, location, and timeline — while maintaining a premium, uncluttered aesthetic that reflects your firm.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-row">
+        <span class="slide-counter"><strong>03</strong> / 06</span>
+        <span class="client-tag">Barry Design Studio</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4 -->
+  <div class="slide-label">Slide 04 of 06</div>
+  <div class="slide">
+    <div class="slide-content">
+      <div class="header-row">
+        <div class="agency-badge">
+          <span class="dot"></span>
+          <span>Hear Hear Agency</span>
+        </div>
+        <div class="slide-category">Operations Roadmap</div>
+      </div>
+
+      <div class="slide-title">Phases of Construction<br><span style="font-size:14px; font-weight:400; color:#666; font-family:'Jost'; letter-spacing:0.05em; text-transform:uppercase;">Our Hands-Off Development Process</span></div>
+
+      <div class="phases-container">
+        <div class="phase-node">
+          <div class="phase-header">
+            <span class="phase-step">01</span>
+            <span class="phase-title">Discovery</span>
+          </div>
+          <div class="phase-desc">Audit existing site, define architectural scale goals, map local SEO baseline.</div>
+        </div>
+        <div class="phase-node">
+          <div class="phase-header">
+            <span class="phase-step">02</span>
+            <span class="phase-title">Schematic</span>
+          </div>
+          <div class="phase-desc">Wireframes, layout system concepts, structural typography system setup.</div>
+        </div>
+        <div class="phase-node">
+          <div class="phase-header">
+            <span class="phase-step">03</span>
+            <span class="phase-title">Build</span>
+          </div>
+          <div class="phase-desc">Development build, high-res image pipeline automation, markup, optimization copy.</div>
+        </div>
+        <div class="phase-node">
+          <div class="phase-header">
+            <span class="phase-step">04</span>
+            <span class="phase-title">Launch</span>
+          </div>
+          <div class="phase-desc">QA testing, dynamic final structural review, domain cutover, site go-live.</div>
+        </div>
+      </div>
+
+      <div class="footer-row">
+        <span class="slide-counter"><strong>04</strong> / 06</span>
+        <span class="client-tag">Barry Design Studio</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5 -->
+  <div class="slide-label">Slide 05 of 06</div>
+  <div class="slide slide-5">
+    <div class="noise"></div>
+    <div class="slide-content">
+      <div class="header-row">
+        <div class="agency-badge" style="border-color: rgba(255,255,255,0.4);">
+          <span class="dot" style="background: #ffffff;"></span>
+          <span style="color: #ffffff;">Hear Hear Agency</span>
+        </div>
+        <div class="slide-category" style="color: rgba(255,255,255,0.7);">Commercial Framework</div>
+      </div>
+
+      <div class="split-investment">
+        <div class="inv-left">
+          <div class="inv-label">Total Investment</div>
+          <div class="inv-price">$8,500</div>
+          <div class="inv-note">50% retainer to initiate.<br>Phase 1 can begin this Monday.</div>
+        </div>
+        <div class="inv-right">
+          <div class="inv-right-title">The Portfolio Experience:</div>
+          <ul class="bullet-list">
+            <li>Complete custom redesign, mobile-first ecosystem</li>
+            <li>Mobile speed optimization + image compression pipeline</li>
+            <li>10 key project detail architectural layouts</li>
+            <li>Foundational Houston-targeted SEO mapping infrastructure</li>
+            <li>Structural project schema markup for Google visibility</li>
+            <li>Hands-off deployment — we coordinate with your office</li>
+          </ul>
+          <div class="roi-box">"One additional mid-to-high-tier project won via your website completely offsets this investment."</div>
+        </div>
+      </div>
+
+      <div class="footer-row" style="border-top-color: rgba(255,255,255,0.2);">
+        <span class="slide-counter" style="color: rgba(255,255,255,0.7);"><strong style="color:#fff;">05</strong> / 06</span>
+        <span class="client-tag" style="color: rgba(255,255,255,0.6);">Barry Design Studio</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6 -->
+  <div class="slide-label">Slide 06 of 06</div>
+  <div class="slide slide-6">
+    <div class="slide-content">
+      <div class="header-row">
+        <div class="agency-badge">
+          <span class="dot"></span>
+          <span>Hear Hear Agency</span>
+        </div>
+        <div class="slide-category">Next Milestones</div>
+      </div>
+
+      <div class="slide-title">Next Steps to Kickoff<br><span style="font-size:14px; font-weight:400; color:#666; font-family:'Jost'; letter-spacing:0.05em; text-transform:uppercase;">Three Steps to Getting Started</span></div>
+
+      <div class="grid-3-col">
+        <div class="card">
+          <div class="step-num">Step 01</div>
+          <div class="card-title">Approve Proposal</div>
+          <div class="card-body">We'll send the agreement via PandaDoc for e-signature. Takes under five minutes to authorize.</div>
+        </div>
+        <div class="card">
+          <div class="step-num">Step 02</div>
+          <div class="card-title">Asset Intake</div>
+          <div class="card-body">We connect directly with your internal team or photographer to collect raw files — no work on your end.</div>
+        </div>
+        <div class="card">
+          <div class="step-num">Step 03</div>
+          <div class="card-title">Strategy Call</div>
+          <div class="card-body">Scheduled for next week. We align on firm goals, map the structure, and begin structural layouts.</div>
+        </div>
+      </div>
+
+      <div class="closing-bar">
+        If this alignment looks correct — we'll send the digital blueprint agreement today.
+      </div>
+
+      <div class="footer-row">
+        <span class="slide-counter"><strong>06</strong> / 06</span>
+        <span class="client-tag">Barry Design Studio</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="dl-hint">Right-click each rendered slide canvas above to instantly save crisp architectural layout images for presentation decks.</p>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+  // Wait for web font and geometric asset rendering to complete
+  window.onload = function() {
+    const slides = document.querySelectorAll('.slide');
+    
+    slides.forEach(slide => {
+      // Execute custom high-fidelity canvas capture optimization
+      html2canvas(slide, { 
+          scale: 2, // Double resolution for ultra-sharp rendering in professional presentation slides
+          useCORS: true, 
+          backgroundColor: null 
+      }).then(canvas => {
+        const img = document.createElement('img');
+        img.src = canvas.toDataURL('image/png');
+        img.className = slide.className;
+        img.style.width = '100%';
+        img.style.height = 'auto';
+        img.style.cursor = 'pointer';
+        
+        // Dynamic HTML element interchange to deliver native clean image rendering results
+        slide.parentNode.replaceChild(img, slide);
+      });
+    });
+  };
+</script>
+
+</body>
+</html>
