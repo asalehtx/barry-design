@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { BrowserRouter, Routes, Route, Link, useParams, useLocation } from "react-router-dom";
-import "./App.css";
+import "./styles/index.css";
 import {
   ALL_PROJECTS,
   CATEGORIES,

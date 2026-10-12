@@ -1,0 +1,124 @@
+/* ── DETAIL HEADER (project, category and about pages) ── */
+.bd-detail-header {
+  padding: 4rem var(--gutter);
+  border-bottom: 1px solid rgba(18, 18, 18, 0.05);
+}
+.bd-detail-back {
+  font-size: 0.8rem; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ink-3); text-decoration: none;
+  display: inline-flex; align-items: center; min-height: 44px;
+  margin-bottom: 1.5rem; transition: color 0.2s;
+}
+.bd-detail-back:hover { color: var(--ink); }
+.bd-detail-title {
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(4rem, 10vw, 8rem); line-height: 0.9;
+  color: var(--ink); margin-bottom: 2.5rem;
+  overflow-wrap: anywhere;
+}
+.bd-detail-meta {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.5rem;
+}
+.bd-detail-meta-label {
+  font-size: 0.8rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--ink-3); margin-bottom: 0.4rem;
+}
+.bd-detail-meta-val { color: var(--ink); font-size: 0.93rem; font-weight: 400; line-height: 1.4; }
+
+/* ── CAROUSEL ── */
+.bd-carousel-wrap { padding: var(--gutter); }
+.bd-carousel {
+  position: relative; width: 100%; height: 70vh;
+  overflow: hidden; background: var(--paper-2);
+  touch-action: pan-y;
+}
+.bd-carousel-img {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  filter: grayscale(10%) brightness(0.95);
+  opacity: 0; transition: opacity 0.5s ease-in-out;
+}
+.bd-carousel-img.active { opacity: 1; z-index: 1; }
+
+.bd-carousel-btn {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
+  width: 48px; height: 48px; border-radius: 50%; border: none;
+  background: var(--paper); color: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.bd-carousel-btn:hover {
+  background: var(--ink); color: var(--paper);
+  transform: translateY(-50%) scale(1.05);
+}
+.bd-carousel-btn.prev { left: 1.5rem; }
+.bd-carousel-btn.next { right: 1.5rem; }
+
+.bd-carousel-count {
+  position: absolute; left: 1.5rem; bottom: 1.5rem; z-index: 10;
+  font-size: 0.8rem; letter-spacing: 0.16em;
+  color: var(--paper); background: rgba(18, 18, 18, 0.6);
+  padding: 0.35rem 0.75rem;
+}
+
+.bd-carousel-dots {
+  position: absolute; bottom: 0.75rem; left: 50%; transform: translateX(-50%);
+  display: flex; z-index: 10;
+}
+/* 44px hit area around an 8px dot. */
+.bd-carousel-dot {
+  width: 44px; height: 44px; padding: 0;
+  background: none; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.bd-carousel-dot::before {
+  content: ''; width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(244, 240, 234, 0.5);
+  transition: background 0.2s, transform 0.2s;
+}
+.bd-carousel-dot.active::before { background: var(--paper); transform: scale(1.3); }
+
+/* ── BODY + NEXT PROJECT ── */
+.bd-detail-body {
+  padding: 4rem var(--gutter) 6rem; max-width: 900px; margin: 0 auto;
+  color: var(--ink-2); font-size: 1.1rem; line-height: 1.8;
+}
+.bd-detail-body p { margin-bottom: 1.5rem; }
+
+.bd-next {
+  border-top: 1px solid rgba(18, 18, 18, 0.07);
+  padding: 4rem var(--gutter) 6rem;
+}
+.bd-next-link {
+  display: inline-flex; flex-direction: column; gap: 0.5rem;
+  text-decoration: none;
+}
+.bd-next-label {
+  font-size: 0.8rem; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+.bd-next-title {
+  font-family: var(--display); font-size: clamp(2.5rem, 6vw, 5rem); line-height: 1;
+  color: var(--ink); transition: color 0.3s ease;
+}
+.bd-next-link:hover .bd-next-title { color: var(--gold); }
+
+/* ── NOT FOUND ── */
+.bd-not-found { padding: 10rem var(--gutter); text-align: center; min-height: 80vh; }
+.bd-not-found-title { font-family: var(--display); font-weight: 400; font-size: 3rem; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .bd-detail-meta { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+}
+
+@media (max-width: 768px) {
+  .bd-detail-header { padding: 3rem var(--gutter); }
+  .bd-detail-meta { grid-template-columns: 1fr; gap: 1.25rem; }
+  .bd-carousel { height: 50vh; }
+  .bd-carousel-btn.prev { left: 1rem; }
+  .bd-carousel-btn.next { right: 1rem; }
+  .bd-carousel-count { top: 1rem; bottom: auto; left: 1rem; }
+}

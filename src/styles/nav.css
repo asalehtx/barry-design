@@ -1,0 +1,166 @@
+/* ── NAV ── */
+.bd-nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--gutter); height: var(--nav-h);
+  background: rgba(244, 240, 234, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(18, 18, 18, 0.05);
+}
+
+.bd-logo-link {
+  display: flex; align-items: center;
+  text-decoration: none;
+  z-index: 200; position: relative;
+}
+.bd-logo-img {
+  display: block;
+  height: 64px;
+  width: auto;
+  object-fit: contain;
+}
+
+.bd-nav-links {
+  display: flex; gap: 2.5rem; list-style: none;
+}
+.bd-nav-links li { position: relative; }
+.bd-nav-links a {
+  font-size: 0.8rem; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ink-2); font-weight: 400; text-decoration: none; transition: color 0.2s;
+}
+.bd-nav-links a:hover { color: var(--gold-text); }
+
+.bd-nav-actions {
+  display: flex; align-items: center; gap: 1.5rem;
+  z-index: 200; position: relative;
+}
+.bd-nav-cta {
+  font-family: var(--body); font-size: 0.8rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ink); font-weight: 400;
+  border: 1px solid var(--ink); padding: 0 1.2rem; min-height: 44px;
+  display: inline-flex; align-items: center;
+  background: none; cursor: pointer; text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+.bd-nav-cta:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* ── MEGAMENU ── */
+/* .bd-nav has backdrop-filter, so it is the containing block for this fixed panel. */
+.bd-megamenu-canvas {
+  position: fixed;
+  top: var(--nav-h);
+  left: 0;
+  width: 100%;
+  background: var(--paper);
+  border-bottom: 1px solid rgba(18, 18, 18, 0.08);
+  padding: 4rem var(--gutter);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.4s var(--ease-out), visibility 0.4s var(--ease-out), transform 0.4s var(--ease-out);
+  z-index: 90;
+}
+.bd-megamenu-canvas.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.bd-megamenu-list-block {
+  display: flex; flex-direction: column; gap: 1.25rem;
+}
+.bd-megamenu-label {
+  font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 0.5rem; padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(18, 18, 18, 0.05);
+}
+.bd-megamenu-links-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 2.5rem;
+}
+.bd-nav-links .bd-megamenu-link {
+  font-size: 0.88rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-2);
+  display: inline-block;
+  transition: color 0.3s ease, transform 0.3s var(--ease-out);
+}
+.bd-nav-links .bd-megamenu-link:hover {
+  color: var(--gold-text);
+  transform: translateX(4px);
+}
+
+.bd-megamenu-display-canvas {
+  position: relative; width: 100%; height: 240px;
+  overflow: hidden; background-color: var(--paper-2);
+}
+.bd-megamenu-preview-img {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  filter: grayscale(15%) brightness(0.95);
+  opacity: 0; transform: scale(1.04);
+  transition: opacity 0.4s var(--ease-out), transform 0.5s var(--ease-out);
+}
+.bd-megamenu-preview-img.active {
+  opacity: 0.15;
+  transform: scale(1);
+}
+.bd-megamenu-display-text {
+  position: absolute; bottom: 2rem; left: 2rem; z-index: 2;
+  pointer-events: none;
+}
+.bd-megamenu-display-h3 {
+  font-family: var(--display); font-size: 2rem; line-height: 1;
+  color: var(--ink); letter-spacing: 0.02em;
+}
+.bd-megamenu-display-sub {
+  font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink-3); margin-top: 0.25rem;
+}
+
+/* ── HAMBURGER + MOBILE MENU ── */
+.bd-hamburger {
+  display: none; flex-direction: column; justify-content: center; align-items: center; gap: 6px;
+  width: 44px; height: 44px;
+  background: none; border: none; cursor: pointer;
+}
+.bd-hamburger span {
+  display: block; width: 25px; height: 1px; background: var(--ink);
+  transition: transform 0.3s ease;
+}
+.bd-hamburger.open span:nth-child(1) { transform: translateY(3.5px) rotate(45deg); }
+.bd-hamburger.open span:nth-child(2) { transform: translateY(-3.5px) rotate(-45deg); }
+
+.bd-mobile-menu {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+  background: var(--paper); z-index: 99;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  opacity: 0; pointer-events: none; visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.bd-mobile-menu.active { opacity: 1; pointer-events: auto; visibility: visible; }
+.bd-mobile-menu-list {
+  list-style: none; text-align: center;
+  display: flex; flex-direction: column; gap: 2.5rem;
+}
+.bd-mobile-menu-link {
+  font-family: var(--display); font-size: 3.5rem; letter-spacing: 0.05em;
+  color: var(--ink); text-decoration: none;
+}
+
+@media (max-width: 1024px) {
+  .bd-nav-links { display: none; }
+  .bd-hamburger { display: flex; }
+  .bd-nav-actions { gap: 1rem; }
+  .bd-megamenu-canvas { display: none; }
+}
+
+@media (max-width: 768px) {
+  .bd-logo-img { height: 48px; }
+}

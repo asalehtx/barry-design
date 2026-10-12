@@ -1,0 +1,8 @@
+/* Order matters: tokens, then base, then page areas. */
+@import "./tokens.css";
+@import "./base.css";
+@import "./nav.css";
+@import "./home.css";
+@import "./project.css";
+@import "./about.css";
+@import "./contact.css";

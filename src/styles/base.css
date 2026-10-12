@@ -1,0 +1,97 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+img { max-width: 100%; }
+
+.bd-skip-link {
+  position: absolute; left: 1rem; top: -100px; z-index: 300;
+  background: var(--ink); color: var(--paper);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase;
+  text-decoration: none;
+}
+.bd-skip-link:focus { top: 1rem; }
+
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* ── SCROLL REVEAL ── */
+.bd-reveal { width: 100%; }
+
+.reveal-fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s var(--ease-reveal), transform 0.8s var(--ease-reveal);
+}
+.reveal-fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.delay-100 { transition-delay: 100ms; }
+.delay-200 { transition-delay: 200ms; }
+.delay-300 { transition-delay: 300ms; }
+.delay-400 { transition-delay: 400ms; }
+
+@keyframes bdUp {
+  from { opacity: 0; transform: translateY(25px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes bdFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── SHARED LABELS ── */
+.bd-section-label {
+  font-size: 0.87rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--ink-3); margin-bottom: 3rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.bd-section-label::after {
+  content: ''; flex: 1; height: 1px;
+  background: rgba(18, 18, 18, 0.08);
+}
+
+.bd-eyebrow {
+  font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--ink-3); margin-bottom: 1rem;
+}
+
+.bd-page {
+  background: var(--paper);
+  min-height: 100vh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal-fade-up {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .bd-proj-panel-bg,
+  .bd-megamenu-preview-img,
+  .bd-hero-bg {
+    transform: none !important;
+  }
+}

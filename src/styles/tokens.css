@@ -1,0 +1,26 @@
+/* Design tokens. Contrast figures are on --paper / --paper-2 (see spec §1). */
+:root {
+  --paper:     #f4f0ea;
+  --paper-2:   #ebe5dd;
+  --ink:       #121212; /* 16.50 / 14.97 */
+  --ink-2:     #4a4a4a; /* 7.81 / 7.08 */
+  --ink-3:     #646464; /* 5.21 / 4.73 */
+  --gold:      #a38757; /* 3.00 — rules, borders and text >= 24px only */
+  --gold-text: #735d30; /* 5.54 / 5.03 — gold at small sizes */
+
+  --nav-h:  88px;
+  --gutter: 2.5rem;
+
+  --display: 'Bebas Neue', sans-serif;
+  --body:    'DM Sans', system-ui, sans-serif;
+
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-reveal: cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-h:  72px;
+    --gutter: 1.25rem;
+  }
+}
