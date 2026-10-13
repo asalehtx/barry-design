@@ -9,7 +9,7 @@
 
 Everything is merged to `main`, which is the only branch.
 - **Checks:** 197 site tests and 6 reel-tool tests pass, and lint, build and the reel's render checks are green.
-- **Not pushed:** there is no git remote yet.
+- **Repo:** https://github.com/asalehtx/barry-design (public). Pushing to `main` deploys the site.
 
 | Work | Status | Docs |
 |---|---|---|
@@ -36,7 +36,8 @@ Everything is merged to `main`, which is the only branch.
 ## Live site
 
 - **Where:** https://barry-design.adam-04d.workers.dev, a Cloudflare Worker named `barry-design` in Hear Hear's account (adam@hearhear.agency).
-- **Deploy:** run `npx wrangler login` once, then `npm run deploy` (it builds, then runs `wrangler deploy`).
+- **Deploy:** push to `main`. Cloudflare Workers Builds is connected to the repo and runs `npm test && npm run build`, then `npx wrangler deploy`. If a test fails, nothing deploys and the live site stays as it was. Build logs are under the Worker's **Deployments** tab in the Cloudflare dashboard, and each commit gets a check on GitHub.
+- **Manual deploy:** run `npx wrangler login` once, then `npm run deploy` (it builds, then runs `wrangler deploy`). The next push to `main` replaces it.
 - **Pages:** `wrangler.jsonc` serves `dist/` as static assets. Any path that isn't a file gets `index.html` with a 200, so `/project/<id>`, `/category/<slug>`, `/?category=<slug>` and unknown paths all load the app. Unknown paths then show the app's own not-found page.
 - **Videos:** Cloudflare's static assets ignore byte-range requests; in production they always returned 200 and the whole file. iPhone Safari won't play video without 206 responses. So `worker/index.js` runs only for `/video/*`:
   - a range request gets 206 with exactly the requested bytes;
