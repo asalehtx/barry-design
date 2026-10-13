@@ -67,7 +67,8 @@ None. The background video must be muted to autoplay, so the files carry no audi
   - `navigator.connection.effectiveType` is `slow-2g` or `2g`
 - **Autoplay refused:** if `play()` rejects (for example iOS Low Power Mode), the poster stays and the video stays invisible.
 - **Retired:** the stock building image `public/images/bg-hero-img.jpg` is no longer used by the hero.
-- **Unchanged:** the hero gradient, the noise overlay and all hero text and buttons.
+- **Hero gradient, darkened (approved 2026-10-12):** stops 0.95 / 0.65 / 0.35 on desktop and 0.95 / 0.75 / 0.45 at ≤ 768px, so headline text keeps 4.5:1 over the reel's brightest frames (the old gradient measured 2.5–2.7:1).
+- **Unchanged:** the noise overlay and all hero text and buttons.
 
 **Project structure**
 - **Remotion project:** lives in `reel/`, with its own `package.json`. No Remotion code ships in the site bundle.
@@ -77,7 +78,7 @@ None. The background video must be muted to autoplay, so the files carry no audi
 ## 5. Assumptions
 
 - **Line style:** `#f4f0ea` at 1.5px (1080p) / 1.25px (720p), on `#121212`, both site tokens.
-- **Photo brightness:** about 75% in the reel. The page's existing hero gradient stays on top for headline contrast.
+- **Photo brightness:** about 75% in the reel. The page's hero gradient, darkened as in §4, stays on top for headline contrast.
 - **OMG Burger image (measured 1920×1080):**
   - **Desktop:** the push-in is capped at 1.04, a 4% upscale.
   - **Phone cut:** it is upscaled about 19% to fill 1280px of height. If the stills show visible softness, an AI upscale of that one image is offered as a follow-up. It is not part of this spec.
