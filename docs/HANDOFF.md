@@ -10,11 +10,11 @@
 |---|---|---|---|
 | Foundations (contact form, assets, accent colour) | Done, on `main` | — | — |
 | **A — Design polish** | **Done, merged to `main`** (98 tests, lint clean) | deleted after merge | [spec](superpowers/specs/2026-10-12-design-polish-phase-a-design.md), [plan](superpowers/plans/2026-10-12-design-polish-phase-a.md) |
-| **B — Remotion hero reel** | **Implemented on branch, not merged** (153 tests, lint, build, render checks green) | `phase-b-hero-reel` | [spec](superpowers/specs/2026-10-12-hero-reel-phase-b-design.md), [plan](superpowers/plans/2026-10-12-hero-reel-phase-b.md) |
+| **B — Remotion hero reel** | **Done, merged to `main`** (153 tests, lint, build, render checks green) | deleted after merge | [spec](superpowers/specs/2026-10-12-hero-reel-phase-b-design.md), [plan](superpowers/plans/2026-10-12-hero-reel-phase-b.md) |
 
 There is no git remote yet, so nothing has been pushed.
 
-## Phase B: implemented, awaiting merge
+## Phase B: done, merged to `main`
 
 Decided 2026-10-12: darker hero gradient (not a dimmed reel), executed natively with one final review.
 
@@ -25,7 +25,6 @@ Decided 2026-10-12: darker hero gradient (not a dimmed reel), executed natively 
 - **Poster preload** in `index.html`, one per viewport.
 
 **Still to do:**
-- **Merge:** `phase-b-hero-reel` into `main`.
 - **Reduce motion:** a real check with macOS **Reduce motion** on (see below).
 - **Deferred minors** from the review:
   - Traces can go stale silently if an image, its focus or the trace settings change without re-running `trace.py`.
