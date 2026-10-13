@@ -3,7 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "studio": "remotion studio"
+    "studio": "remotion studio",
+    "render:16x9:mp4": "remotion render HeroReel16x9 ../public/video/hero-16x9.mp4 --codec=h264 --crf=30 --x264-preset=slow --pixel-format=yuv420p --color-space=bt709 --muted",
+    "render:16x9:webm": "remotion render HeroReel16x9 ../public/video/hero-16x9.webm --codec=vp9 --crf=46 --pixel-format=yuv420p --color-space=bt709 --muted",
+    "render:9x16:mp4": "remotion render HeroReel9x16 ../public/video/hero-9x16.mp4 --codec=h264 --crf=30 --x264-preset=slow --pixel-format=yuv420p --color-space=bt709 --muted",
+    "render:9x16:webm": "remotion render HeroReel9x16 ../public/video/hero-9x16.webm --codec=vp9 --crf=44 --pixel-format=yuv420p --color-space=bt709 --muted",
+    "render": "npm run render:16x9:mp4 && npm run render:16x9:webm && npm run render:9x16:mp4 && npm run render:9x16:webm"
   },
   "dependencies": {
     "@remotion/cli": "4.0.529",
