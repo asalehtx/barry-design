@@ -1,0 +1,124 @@
+{
+  "fps": 30,
+  "segmentFrames": 150,
+  "formats": {
+    "16x9": {
+      "width": 1920,
+      "height": 1080
+    },
+    "9x16": {
+      "width": 720,
+      "height": 1280
+    }
+  },
+  "segments": [
+    {
+      "projectId": "xo-juice-and-studio",
+      "image": "/images/projects/xo/xo-2.jpg",
+      "maxScale": 1.06,
+      "focus": {
+        "16x9": [
+          0.5,
+          0.5
+        ],
+        "9x16": [
+          0.8,
+          0.5
+        ]
+      },
+      "trace": {
+        "16x9": {
+          "maxLines": 60,
+          "minLength": 0.05,
+          "exclude": [
+            [
+              0,
+              0,
+              0.17,
+              1
+            ],
+            [
+              0.72,
+              0.66,
+              0.93,
+              1
+            ]
+          ]
+        },
+        "9x16": {
+          "maxLines": 50,
+          "minLength": 0.05,
+          "exclude": [
+            [
+              0.35,
+              0.62,
+              1,
+              1
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "projectId": "omg-burger",
+      "image": "/images/projects/omg-burger/omg-burger-1.jpg",
+      "maxScale": 1.04,
+      "focus": {
+        "16x9": [
+          0.5,
+          0.5
+        ],
+        "9x16": [
+          0.5,
+          0.5
+        ]
+      },
+      "trace": {
+        "16x9": {
+          "maxLines": 60,
+          "minLength": 0.05,
+          "exclude": []
+        },
+        "9x16": {
+          "maxLines": 50,
+          "minLength": 0.05,
+          "exclude": []
+        }
+      }
+    },
+    {
+      "projectId": "haii-keii",
+      "image": "/images/projects/haii-keii/haii-keii-3.jpg",
+      "maxScale": 1.06,
+      "focus": {
+        "16x9": [
+          0.5,
+          0.5
+        ],
+        "9x16": [
+          0.5,
+          0.5
+        ]
+      },
+      "trace": {
+        "16x9": {
+          "maxLines": 60,
+          "minLength": 0.05,
+          "exclude": [
+            [
+              0,
+              0.72,
+              0.13,
+              1
+            ]
+          ]
+        },
+        "9x16": {
+          "maxLines": 50,
+          "minLength": 0.05,
+          "exclude": []
+        }
+      }
+    }
+  ]
+}
