@@ -81,7 +81,7 @@ Everything is merged to `main`, which is the only branch.
 
 - **Node:** Node 24 and npm 11. The reel has its own `node_modules` (`npm --prefix reel install`), needed to render. The root `npm test` doesn't need it: the root also installs `remotion` at the reel's exact version, because Cloudflare's build installs only the root packages and the reel's beat tests import `remotion`. A test fails if the two versions drift apart.
 - **Pinned versions:**
-  - Remotion 4.0.529 and Wrangler 4.149.0.
+  - Remotion 4.0.535 (the reel and the root must match; a test checks) and Wrangler 4.149.0. The shipped videos were rendered with 4.0.529; a 4.0.535 render looked the same (about 40 dB PSNR, all render checks passing), so they weren't replaced.
   - The Python tools use `opencv-python-headless==4.14.0.94`, `numpy==2.5.3` and `pillow==12.2.0`, in `reel/.venv` (git-ignored). Create it with `python3 -m venv reel/.venv && reel/.venv/bin/pip install -r reel/tools/requirements.txt`.
 - **Compatibility date:** `2026-10-06` in `wrangler.jsonc`, the newest date the pinned Wrangler's local runtime supports, so `wrangler dev` matches production.
 - **Security:** `npm audit` reports 0 warnings as of 2026-10-12, after react-router 7.18.4 and an `npm audit fix` that took Vite to 8.3.4.
