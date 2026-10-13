@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { BrowserRouter, Routes, Route, Link, useParams, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, useParams, useLocation, useSearchParams } from "react-router-dom";
 import "./styles/index.css";
 import {
   ALL_PROJECTS,
@@ -10,6 +10,7 @@ import {
   filterByCategory,
   findCategoryBySlug,
   findProject,
+  slugify,
   formatNum,
   hasPhotos,
   nextProject,
@@ -338,12 +339,15 @@ function ProjectRow({ proj, num }) {
   );
 }
 
-function InProgressList({ projects }) {
+// "Also" only when photographed projects come before it.
+function InProgressList({ projects, afterPhotos }) {
   if (projects.length === 0) return null;
 
   return (
     <section className="bd-inprogress" aria-labelledby="inprogress-heading">
-      <h3 className="bd-inprogress-label" id="inprogress-heading">Also in progress</h3>
+      <h3 className="bd-inprogress-label" id="inprogress-heading">
+        {afterPhotos ? "Also in progress" : "In progress"}
+      </h3>
       <ul className="bd-inprogress-list">
         {projects.map((p) => (
           <li key={p.id}>
@@ -377,16 +381,24 @@ function ProjectLists({ projects }) {
           ))}
         </div>
       )}
-      <InProgressList projects={inProgress} />
+      <InProgressList projects={inProgress} afterPhotos={photographed.length > 0} />
     </>
   );
 }
 
 const FILTERS = [ALL_PROJECTS, ...CATEGORIES];
 
+// The active filter lives in the URL (`/?category=retail`), so it survives Back, reloads and
+// shared links. Changing it replaces the current history entry and is marked so Home won't scroll.
 export function Work({ projects = PROJECTS }) {
-  const [activeCat, setActiveCat] = useState(ALL_PROJECTS);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeCat = findCategoryBySlug(searchParams.get("category")) ?? ALL_PROJECTS;
   const visible = filterByCategory(projects, activeCat);
+  const setActiveCat = (cat) =>
+    setSearchParams(cat === ALL_PROJECTS ? {} : { category: slugify(cat) }, {
+      replace: true,
+      state: { filterChange: true },
+    });
 
   return (
     <section className="bd-work" id="work" aria-labelledby="work-heading">
@@ -600,6 +612,27 @@ function Footer() {
 
 // ─── ROUTE COMPONENTS ─────────────────────────────────────────────────────────
 
+// One not-found page for unknown paths, projects and categories.
+function NotFound({ title }) {
+  return (
+    <article className="bd-page">
+      <header className="bd-detail-header">
+        <Link to="/" className="bd-detail-back">← Back to Home</Link>
+        <h1 className="bd-detail-title">{title}</h1>
+        <p className="bd-not-found-copy">This page may have moved, or the link may be mistyped.</p>
+        <Link to="/#work" className="bd-not-found-link">View all projects →</Link>
+      </header>
+    </article>
+  );
+}
+
+function PageNotFound() {
+  useEffect(() => {
+    scrollToTop();
+  }, []);
+  return <NotFound title="Page Not Found" />;
+}
+
 export function ProjectCategory() {
   const { slug } = useParams();
   const { pathname } = useLocation();
@@ -609,16 +642,7 @@ export function ProjectCategory() {
     scrollToTop();
   }, [pathname]);
 
-  if (!category) {
-    return (
-      <div className="bd-page">
-        <header className="bd-detail-header">
-          <Link to="/" className="bd-detail-back">← Back to Home</Link>
-          <h1 className="bd-detail-title">Category Not Found</h1>
-        </header>
-      </div>
-    );
-  }
+  if (!category) return <NotFound title="Category Not Found" />;
 
   return (
     <article className="bd-page">
@@ -634,26 +658,35 @@ export function ProjectCategory() {
 }
 
 function Home() {
-  const { hash, key } = useLocation();
+  const { hash, key, search, state } = useLocation();
+  const hasMounted = useRef(false);
 
   useEffect(() => {
+    const firstRun = !hasMounted.current;
+    hasMounted.current = true;
+    // A filter change only rewrites the URL; the page stays where it is.
+    if (state?.filterChange && !firstRun) return undefined;
+
     if (hash) {
       const element = document.getElementById(hash.replace("#", ""));
-      if (element) {
-        setTimeout(() => {
-          element.scrollIntoView({ behavior: "smooth" });
-        }, 100);
-      }
+      if (!element) return undefined;
+      const timer = setTimeout(() => element.scrollIntoView({ behavior: "smooth" }), 100);
+      return () => clearTimeout(timer);
+    }
+    // Arriving at a filtered list (Back from a project, or a shared link) lands on the list.
+    if (new URLSearchParams(search).has("category")) {
+      document.getElementById("work")?.scrollIntoView({ behavior: "instant" });
     } else {
       scrollToTop();
     }
-  }, [hash, key]);
+    return undefined;
+  }, [hash, key, search, state]);
 
   return (
     <>
       <Hero />
-      {/* Every link to #work (e.g. the menu's "All Projects") remounts the list, clearing the filter. */}
-      <Work key={hash === "#work" ? key : "work"} />
+      {/* "All Projects" links to /#work, whose URL has no category, so it clears the filter. */}
+      <Work />
       <Statement />
       <Services />
     </>
@@ -785,7 +818,7 @@ function Carousel({ images, title }) {
 }
 
 // Keyed by id so the carousel resets when moving between projects.
-function ProjectDetailRoute() {
+export function ProjectDetailRoute() {
   const { id } = useParams();
   return <ProjectDetail key={id} id={id} />;
 }
@@ -797,13 +830,7 @@ export function ProjectDetail({ id }) {
     scrollToTop();
   }, [id]);
 
-  if (!proj) {
-    return (
-      <div className="bd-not-found">
-        <h2 className="bd-not-found-title">Project Not Found</h2>
-      </div>
-    );
-  }
+  if (!proj) return <NotFound title="Project Not Found" />;
 
   const next = nextProject(PROJECTS, proj.id);
 
@@ -865,6 +892,7 @@ export default function BarryDesignStudio() {
           <Route path="/about" element={<About />} />
           <Route path="/project/:id" element={<ProjectDetailRoute />} />
           <Route path="/category/:slug" element={<ProjectCategory />} />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </main>
       <Footer />

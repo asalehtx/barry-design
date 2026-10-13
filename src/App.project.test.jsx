@@ -1,21 +1,15 @@
 import { describe, it, expect } from 'vitest'
 import { fireEvent, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Route, Routes, useParams } from 'react-router-dom'
-import { ProjectDetail } from './App'
+import { Route, Routes } from 'react-router-dom'
+import { ProjectDetailRoute } from './App'
 import { PROCUREMENT_COPY, PROJECTS } from './data/projects'
 import { renderAt } from './test/render'
-
-// Mirrors the app's route wrapper so tests exercise the same remount-on-id behaviour.
-function DetailRoute() {
-  const { id } = useParams()
-  return <ProjectDetail key={id} id={id} />
-}
 
 const renderProject = (id) =>
   renderAt(
     <Routes>
-      <Route path="/project/:id" element={<DetailRoute />} />
+      <Route path="/project/:id" element={<ProjectDetailRoute />} />
     </Routes>,
     `/project/${id}`,
   )

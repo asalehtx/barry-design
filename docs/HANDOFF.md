@@ -55,11 +55,11 @@ Decided 2026-10-12: darker hero gradient (not a dimmed reel), executed natively 
 ## Open items, not blocking
 - **Real reduced-motion check:** turn on macOS **Reduce motion** and load `/`. Content should appear without animation. The browser pane couldn't emulate it.
 - **Deploy:** the host must rewrite every path to `index.html`, or deep links like `/project/haii-keii` will 404.
-- **Deferred from Phase A's review:**
-  - Not-found pages are inconsistent, and unmatched paths render blank.
-  - The carousel key-reset test uses its own route wrapper.
-  - The filter is lost after Back.
-  - The "Also in progress" heading reads oddly when nothing precedes it.
+- **Phase A's deferred items:** all fixed on 2026-10-12.
+  - One not-found page now serves unknown paths, projects and categories, with ways back.
+  - The work filter lives in the URL (`/?category=retail`). It survives Back (which lands on the list), reloads and shared links.
+  - The compact list reads "In progress" when no photographed projects precede it.
+  - The carousel test uses the app's own route component.
 - **Possible Phase B follow-up:** an AI upscale of `omg-burger-1.jpg`. Its 9:16 cut is upscaled about 19%; at full size it looked only mildly soft, so this isn't needed now.
 
 ## How to run

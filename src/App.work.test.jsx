@@ -10,7 +10,7 @@ const rowTitles = () =>
   screen.queryAllByRole('link', { name: /^View project:/ }).map((a) => a.getAttribute('aria-label').replace('View project: ', ''))
 
 const inProgressTitles = () => {
-  const section = screen.queryByRole('region', { name: 'Also in progress' })
+  const section = screen.queryByRole('region', { name: /^(Also in|In) progress$/ })
   if (!section) return []
   return within(section).getAllByRole('link').map((a) => a.querySelector('.bd-inprogress-title').textContent)
 }
@@ -50,6 +50,16 @@ describe('Work list', () => {
     expect(rowTitles()).toEqual(['OMG BURGER', 'CYCLONE ANAYAS', 'HAII KEII'])
     expect(document.querySelectorAll('.bd-proj-num')[0].textContent).toBe('01')
     expect(inProgressTitles()).toEqual(['FLYING SAUCER DRAUGHT'])
+  })
+
+  it('heads the compact list "Also in progress" only when photographed projects precede it', async () => {
+    const user = userEvent.setup()
+    renderAt(<Work />)
+    expect(screen.getByRole('region', { name: 'Also in progress' })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Retail' }))
+    expect(screen.getByRole('region', { name: 'In progress' })).toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: 'Also in progress' })).toBeNull()
   })
 
   it('filters in place from the phone dropdown', async () => {

@@ -106,8 +106,13 @@
 .bd-next-link:hover .bd-next-title { color: var(--gold); }
 
 /* ── NOT FOUND ── */
-.bd-not-found { padding: 10rem var(--gutter); text-align: center; min-height: 80vh; }
-.bd-not-found-title { font-family: var(--display); font-weight: 400; font-size: 3rem; }
+.bd-not-found-copy { color: var(--ink-2); font-size: 1.1rem; line-height: 1.8; margin-bottom: 1.5rem; }
+.bd-not-found-link {
+  font-size: 0.8rem; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ink); text-decoration: underline; text-underline-offset: 0.35em;
+  display: inline-flex; align-items: center; min-height: 44px;
+}
+.bd-not-found-link:hover { color: var(--ink-2); }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 1024px) {
