@@ -28,4 +28,12 @@ describe('Cloudflare deploy config', () => {
   it('builds before deploying', () => {
     expect(JSON.parse(read('package.json')).scripts.deploy).toBe('npm run build && wrangler deploy')
   })
+
+  // Cloudflare's build installs only the root packages, but `npm test` also runs the reel's beat
+  // tests, which import `remotion`. The root copy must match the reel's so both test the same code.
+  it('installs the same remotion as the reel, so npm test passes in a clean build', () => {
+    const root = JSON.parse(read('package.json')).devDependencies.remotion
+    const reel = JSON.parse(read('reel/package.json')).dependencies.remotion
+    expect(root).toBe(reel)
+  })
 })

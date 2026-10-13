@@ -80,7 +80,7 @@ Everything is merged to `main`, which is the only branch.
 
 ## Environment
 
-- **Node:** Node 24 and npm 11. The reel has its own `node_modules`; run `npm --prefix reel install` before the root `npm test`, because the reel's beat tests import `remotion`.
+- **Node:** Node 24 and npm 11. The reel has its own `node_modules` (`npm --prefix reel install`), needed to render. The root `npm test` doesn't need it: the root also installs `remotion` at the reel's exact version, because Cloudflare's build installs only the root packages and the reel's beat tests import `remotion`. A test fails if the two versions drift apart.
 - **Pinned versions:**
   - Remotion 4.0.529 and Wrangler 4.149.0.
   - The Python tools use `opencv-python-headless==4.14.0.94`, `numpy==2.5.3` and `pillow==12.2.0`, in `reel/.venv` (git-ignored). Create it with `python3 -m venv reel/.venv && reel/.venv/bin/pip install -r reel/tools/requirements.txt`.
