@@ -12,6 +12,17 @@
         "--strictPort"
       ],
       "port": 4173
+    },
+    {
+      "name": "cloudflare",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "wrangler",
+        "dev",
+        "--port",
+        "8787"
+      ],
+      "port": 8787
     }
   ]
 }

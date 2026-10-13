@@ -30,3 +30,6 @@ dist-ssr
 reel/.venv/
 reel/out/
 reel/tools/__pycache__/
+
+# Wrangler local state
+.wrangler/

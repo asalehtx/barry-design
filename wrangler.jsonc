@@ -1,0 +1,13 @@
+// Cloudflare Workers static assets: deploy with `npm run deploy` (builds, then `wrangler deploy`).
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "barry-design",
+  // The newest date the pinned Wrangler 4.142.0 runtime supports, so `wrangler dev` matches production.
+  "compatibility_date": "2026-10-03",
+  "assets": {
+    "directory": "./dist",
+    // Unknown paths get index.html with a 200, so /project/<id>, /category/<slug> and
+    // /?category=<slug> load the app and React Router renders the page (or its not-found page).
+    "not_found_handling": "single-page-application"
+  }
+}

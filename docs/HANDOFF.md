@@ -54,7 +54,10 @@ Decided 2026-10-12: darker hero gradient (not a dimmed reel), executed natively 
 
 ## Open items, not blocking
 - **Real reduced-motion check:** turn on macOS **Reduce motion** and load `/`. Content should appear without animation. The browser pane couldn't emulate it.
-- **Deploy:** the host must rewrite every path to `index.html`, or deep links like `/project/haii-keii` will 404.
+- **Deploy (Cloudflare):** `wrangler.jsonc` serves `dist/` as Workers static assets, answering every unknown path with `index.html`, so deep links and `/?category=` links work. Not yet deployed, because that needs your Cloudflare account. Steps:
+  1. Run `npx wrangler login` once.
+  2. Run `npm run deploy`.
+  3. **Check video playback in Safari.** Locally, `wrangler dev` answers byte-range requests with the whole file (200, not 206). Safari needs 206 to play video. Cloudflare's docs don't say what production does. Check with `curl -sI -H "Range: bytes=0-99" https://<site>/video/hero-16x9.mp4`. If it returns 200, serve `/video/*` from R2 or a small Worker instead.
 - **Phase A's deferred items:** all fixed on 2026-10-12.
   - One not-found page now serves unknown paths, projects and categories, with ways back.
   - The work filter lives in the URL (`/?category=retail`). It survives Back (which lands on the list), reloads and shared links.
@@ -69,5 +72,7 @@ npm run dev        # dev server
 npm test           # Vitest suite
 npm run lint
 npm run build && npm run preview   # production preview on :4173
+npm run build && npx wrangler dev  # the build served by Cloudflare's runtime on :8787
+npm run deploy                     # build, then deploy to Cloudflare (after `npx wrangler login`)
 ```
 `scripts/verify-page.js` is a browser-console check for small text, overflow, broken images and tap targets. Usage is in Phase A's plan, Task 7.
