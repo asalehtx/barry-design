@@ -93,8 +93,7 @@ img { max-width: 100%; }
     transform: none !important;
   }
   .bd-proj-panel-bg,
-  .bd-megamenu-preview-img,
-  .bd-hero-bg {
+  .bd-megamenu-preview-img {
     transform: none !important;
   }
   .bd-carousel-btn:hover {

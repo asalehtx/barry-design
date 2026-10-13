@@ -6,16 +6,22 @@
   position: relative; overflow: hidden;
   background-color: var(--ink);
 }
-.bd-hero-bg {
+/* Poster shows at once; the reel fades in over it once it is actually playing. */
+.bd-hero-poster,
+.bd-hero-poster img,
+.bd-hero-video {
   position: absolute; inset: 0;
-  background-image: url("/images/bg-hero-img.jpg");
-  background-size: cover; background-position: center 40%; background-repeat: no-repeat;
-  transform: scale(1.02);
-  filter: brightness(0.65) contrast(1.05) saturate(0.9);
+  width: 100%; height: 100%;
+  object-fit: cover;
 }
+.bd-hero-video { opacity: 0; transition: opacity 0.6s ease; }
+.bd-hero-video.is-playing { opacity: 1; }
+
+/* Stops measured against the reel's brightest frames for >= 4.5:1 text contrast
+   (reel/tools/check_renders.py mirrors these values). */
 .bd-hero-gradient {
   position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(to top, rgba(18, 18, 18, 0.95) 0%, rgba(18, 18, 18, 0.4) 50%, rgba(18, 18, 18, 0.1) 100%);
+  background: linear-gradient(to top, rgba(18, 18, 18, 0.95) 0%, rgba(18, 18, 18, 0.65) 50%, rgba(18, 18, 18, 0.35) 100%);
 }
 .bd-hero-noise {
   position: absolute; inset: 0; pointer-events: none; opacity: 0.03;
@@ -26,11 +32,21 @@
   position: absolute; top: 0; right: var(--gutter); bottom: 5rem; width: 1px;
   background: linear-gradient(to bottom, transparent, rgba(244, 240, 234, 0.1) 20%, rgba(244, 240, 234, 0.1) 80%, transparent);
 }
-.bd-hero-scroll {
-  position: absolute; bottom: 5rem; right: calc(var(--gutter) + 0.15rem);
-  font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase;
-  color: rgba(244, 240, 234, 0.8); writing-mode: vertical-lr;
+
+/* Names the space on screen; re-keyed per project so each name fades in. */
+.bd-hero-badge {
+  position: absolute; right: var(--gutter); bottom: 5rem; z-index: 3;
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  min-height: 44px; padding: 0 1rem;
+  font-size: 0.8rem; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--paper); text-decoration: none;
+  background: rgba(18, 18, 18, 0.6);
+  border: 1px solid rgba(244, 240, 234, 0.3);
+  animation: bdFadeIn 0.4s ease both;
+  transition: border-color 0.2s;
 }
+.bd-hero-badge:hover { border-color: var(--paper); }
+.bd-hero-badge-label { color: rgba(244, 240, 234, 0.8); }
 .bd-hero-eyebrow {
   font-size: 0.88rem; letter-spacing: 0.2em; text-transform: uppercase;
   color: rgba(244, 240, 234, 0.85); margin-bottom: 1.5rem;
@@ -286,8 +302,11 @@
 
 @media (max-width: 768px) {
   .bd-hero { min-height: 85vh; min-height: 85svh; padding: 6rem var(--gutter) 4rem; }
-  .bd-hero-rule-v,
-  .bd-hero-scroll { display: none; }
+  .bd-hero-rule-v { display: none; }
+  .bd-hero-badge { top: 1rem; bottom: auto; }
+  .bd-hero-gradient {
+    background: linear-gradient(to top, rgba(18, 18, 18, 0.95) 0%, rgba(18, 18, 18, 0.75) 50%, rgba(18, 18, 18, 0.45) 100%);
+  }
   .bd-hero-btns { flex-direction: column; }
   .bd-btn-fill, .bd-btn-ghost { width: 100%; }
 

@@ -16,6 +16,8 @@ import {
   splitByPhotos,
 } from "./data/projects";
 import { swipeStep, wrapIndex } from "./lib/carousel";
+import { REEL, segmentIndexAt } from "./data/heroReel";
+import { PHONE_QUERY, heroSources, shouldShowPosterOnly } from "./lib/heroMedia";
 
 // Route changes jump to the top; the global smooth scroll is for in-page anchors only.
 const scrollToTop = () => window.scrollTo({ top: 0, behavior: "instant" });
@@ -186,15 +188,71 @@ export function Nav() {
   );
 }
 
+// Chosen once per visit: video sources, or null when only the poster should show.
+const pickHeroSources = () =>
+  shouldShowPosterOnly({ matchMedia: (q) => window.matchMedia(q), connection: navigator.connection })
+    ? null
+    : heroSources(window.matchMedia(PHONE_QUERY).matches);
+
+// Names the space currently on screen and links to it. Re-keyed per project so it fades in.
+function HeroBadge({ segment }) {
+  const project = findProject(REEL.segments[segment].projectId);
+  return (
+    <Link key={project.id} to={`/project/${project.id}`} className="bd-hero-badge">
+      <span className="bd-hero-badge-label">Now showing</span>
+      <span className="bd-hero-badge-title">{project.title}</span>
+      <span aria-hidden="true">→</span>
+    </Link>
+  );
+}
+
+function HeroMedia() {
+  const videoRef = useRef(null);
+  const [sources] = useState(pickHeroSources);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [segment, setSegment] = useState(0);
+
+  useEffect(() => {
+    // Autoplay can be refused (e.g. iOS Low Power Mode); the poster then simply stays.
+    videoRef.current?.play()?.catch(() => {});
+  }, []);
+
+  return (
+    <>
+      <picture className="bd-hero-poster" aria-hidden="true">
+        <source media={PHONE_QUERY} srcSet="/video/hero-poster-9x16.webp" />
+        <img src="/video/hero-poster-16x9.webp" alt="" fetchPriority="high" />
+      </picture>
+      {sources && (
+        <video
+          ref={videoRef}
+          className={`bd-hero-video ${isPlaying ? "is-playing" : ""}`}
+          muted
+          loop
+          playsInline
+          autoPlay
+          preload="auto"
+          aria-hidden="true"
+          onPlaying={() => setIsPlaying(true)}
+          onTimeUpdate={(e) => setSegment(segmentIndexAt(e.currentTarget.currentTime))}
+        >
+          {sources.map((s) => (
+            <source key={s.src} src={s.src} type={s.type} />
+          ))}
+        </video>
+      )}
+      <HeroBadge segment={segment} />
+    </>
+  );
+}
+
 function Hero() {
   return (
     <section className="bd-hero" aria-label="Hero">
-      <div className="bd-hero-bg" aria-hidden="true" />
+      <HeroMedia />
       <div className="bd-hero-gradient" aria-hidden="true" />
       <div className="bd-hero-noise" aria-hidden="true" />
       <div className="bd-hero-rule-v" aria-hidden="true" />
-
-      <p className="bd-hero-scroll" aria-hidden="true">scroll</p>
 
       <p className="bd-hero-eyebrow">Houston, TX · Architectural Design Studio</p>
 

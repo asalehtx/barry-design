@@ -114,3 +114,25 @@ describe('skip-link target', () => {
     expect(value('#main:focus', 'outline')).toBe('none')
   })
 })
+
+describe('hero reel', () => {
+  it('darkens the hero enough for text over the reel (stops mirrored in reel/tools/check_renders.py)', () => {
+    expect(value('.bd-hero-gradient', 'background')).toBe(
+      'linear-gradient(to top, rgba(18, 18, 18, 0.95) 0%, rgba(18, 18, 18, 0.65) 50%, rgba(18, 18, 18, 0.35) 100%)',
+    )
+    expect(value('.bd-hero-gradient', 'background', 'max-width: 768px')).toBe(
+      'linear-gradient(to top, rgba(18, 18, 18, 0.95) 0%, rgba(18, 18, 18, 0.75) 50%, rgba(18, 18, 18, 0.45) 100%)',
+    )
+  })
+
+  it('keeps the video hidden until it plays, then fades it in', () => {
+    expect(value('.bd-hero-video', 'opacity')).toBe('0')
+    expect(value('.bd-hero-video.is-playing', 'opacity')).toBe('1')
+  })
+
+  it('puts the badge bottom-right on desktop and top-right on phones, with a 44px target', () => {
+    expect(value('.bd-hero-badge', 'bottom')).toBe('5rem')
+    expect(value('.bd-hero-badge', 'top', 'max-width: 768px')).toBe('1rem')
+    expect(px(value('.bd-hero-badge', 'min-height'))).toBeGreaterThanOrEqual(44)
+  })
+})
