@@ -30,7 +30,7 @@ Everything is merged to `main`, which is the only branch.
    - Instagram, Facebook and LinkedIn URLs (`SOCIAL_LINKS` in `src/App.jsx`).
 5. **Optional:**
    - An AI upscale of `omg-burger-1.jpg`. Its 9:16 cut is upscaled about 19%. At full size it looked only mildly soft, so this isn't needed now.
-   - `npm audit` lists 10 warnings. Most are in build tooling (Vite, Babel, PostCSS). `react-router` 7.15.0 does ship to visitors; nearly all of its advisories cover server rendering, which this static site doesn't use. Upgrading to 7.18.2 or later clears them.
+   - `npm audit` lists 8 warnings. All are in build and test tooling (Vite and PostCSS, ESLint, jsdom, Babel), and none ship to visitors. `react-router` was upgraded to 7.18.4 on 2026-10-12, which cleared its advisories.
 
 ## Live site
 
