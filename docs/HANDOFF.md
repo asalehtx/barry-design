@@ -22,6 +22,8 @@ Everything is merged to `main`, which is the only branch.
 ## Open items
 
 1. **Check iPhone playback.** Open the live site in Safari on an iPhone; the hero reel should play. The server side is verified (206 range responses), but no real iPhone has tried it yet.
+   - Desktop Chrome was checked on 2026-10-13. It picked `hero-16x9.webm` at 1920×1080, autoplayed muted, looped at 15s, went from line drawing to photo, kept the corner badge in step, and the pause/play button worked. Chrome doesn't need 206 responses, so this doesn't stand in for the iPhone check.
+   - Check playback in a visible tab. Browsers don't play video in hidden or background tabs, so a hidden one shows the reel paused.
 2. **Check Reduce Motion.** Turn on macOS **Reduce motion** and load `/`. You should see the still poster and no video, and content should appear without animation. The browser pane can't emulate this setting.
 3. **Decide where the site lives long-term.** It's on Hear Hear's Cloudflare account at a `workers.dev` address. If it should move to Yousef's account or a custom domain, deploy there and update [Live site](#live-site).
 4. **Waiting on Yousef:**
