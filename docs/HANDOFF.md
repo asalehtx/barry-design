@@ -30,8 +30,7 @@ Everything is merged to `main`, which is the only branch.
    - Instagram, Facebook and LinkedIn URLs (`SOCIAL_LINKS` in `src/App.jsx`).
 5. **Optional:**
    - An AI upscale of `omg-burger-1.jpg`. Its 9:16 cut is upscaled about 19%. At full size it looked only mildly soft, so this isn't needed now.
-   - `npm audit` lists 14 warnings. All are in dev tooling (Vite, Babel, Wrangler's local runtime), and none ship to visitors.
-   - Wrangler 4.149 is out; this project pins 4.142.0. If you upgrade, the compatibility date can move up too (see [Environment](#environment)).
+   - `npm audit` lists 10 warnings. Most are in build tooling (Vite, Babel, PostCSS). `react-router` 7.15.0 does ship to visitors; nearly all of its advisories cover server rendering, which this static site doesn't use. Upgrading to 7.18.2 or later clears them.
 
 ## Live site
 
@@ -83,9 +82,9 @@ Everything is merged to `main`, which is the only branch.
 
 - **Node:** Node 24 and npm 11. The reel has its own `node_modules`; run `npm --prefix reel install` before the root `npm test`, because the reel's beat tests import `remotion`.
 - **Pinned versions:**
-  - Remotion 4.0.529 and Wrangler 4.142.0.
+  - Remotion 4.0.529 and Wrangler 4.149.0.
   - The Python tools use `opencv-python-headless==4.14.0.94`, `numpy==2.5.3` and `pillow==12.2.0`, in `reel/.venv` (git-ignored). Create it with `python3 -m venv reel/.venv && reel/.venv/bin/pip install -r reel/tools/requirements.txt`.
-- **Compatibility date:** `2026-10-03` in `wrangler.jsonc`, the newest date the pinned Wrangler's local runtime supports, so `wrangler dev` matches production.
+- **Compatibility date:** `2026-10-06` in `wrangler.jsonc`, the newest date the pinned Wrangler's local runtime supports, so `wrangler dev` matches production.
 - **ffmpeg:**
   - No system ffmpeg is needed, because Remotion bundles `ffmpeg` and `ffprobe` (`npx remotion ffmpeg`).
   - Its build has no WebP encoder, no `rawvideo` muxer and no `select` filter. That's why posters go through Pillow and the seam check seeks by time.
