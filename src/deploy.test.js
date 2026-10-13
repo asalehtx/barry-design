@@ -7,9 +7,18 @@ const read = (file) => readFileSync(join(process.cwd(), file), 'utf8')
 const config = JSON.parse(read('wrangler.jsonc').replace(/^\s*\/\/.*$/gm, ''))
 
 describe('Cloudflare deploy config', () => {
-  it('serves the Vite build as static assets, with no Worker script', () => {
+  it('serves the Vite build as static assets', () => {
     expect(config.assets.directory).toBe('./dist')
-    expect(config.main).toBeUndefined()
+  })
+
+  it('runs the range-serving Worker for the hero videos only, so iPhone Safari can play them', () => {
+    expect(config.main).toBe('./worker/index.js')
+    expect(config.assets.binding).toBe('ASSETS')
+    expect(config.assets.run_worker_first).toEqual(['/video/*'])
+  })
+
+  it('keeps macOS .DS_Store files out of the upload', () => {
+    expect(read('public/.assetsignore').split('\n')).toContain('.DS_Store')
   })
 
   it('answers every unknown path with index.html so deep links and ?category= links load the app', () => {

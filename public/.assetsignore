@@ -1,0 +1,2 @@
+# Files Wrangler should not upload from dist/ (Vite copies this file there from public/).
+.DS_Store

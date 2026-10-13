@@ -4,8 +4,13 @@
   "name": "barry-design",
   // The newest date the pinned Wrangler 4.142.0 runtime supports, so `wrangler dev` matches production.
   "compatibility_date": "2026-10-03",
+  // Only /video/* reaches the Worker: it adds byte-range (206) support, which static assets lack
+  // and iPhone Safari needs to play video. Everything else is served straight from the assets.
+  "main": "./worker/index.js",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/video/*"],
     // Unknown paths get index.html with a 200, so /project/<id>, /category/<slug> and
     // /?category=<slug> load the app and React Router renders the page (or its not-found page).
     "not_found_handling": "single-page-application"

@@ -54,10 +54,12 @@ Decided 2026-10-12: darker hero gradient (not a dimmed reel), executed natively 
 
 ## Open items, not blocking
 - **Real reduced-motion check:** turn on macOS **Reduce motion** and load `/`. Content should appear without animation. The browser pane couldn't emulate it.
-- **Deploy (Cloudflare):** `wrangler.jsonc` serves `dist/` as Workers static assets, answering every unknown path with `index.html`, so deep links and `/?category=` links work. Not yet deployed, because that needs your Cloudflare account. Steps:
-  1. Run `npx wrangler login` once.
-  2. Run `npm run deploy`.
-  3. **Check video playback in Safari.** Locally, `wrangler dev` answers byte-range requests with the whole file (200, not 206). Safari needs 206 to play video. Cloudflare's docs don't say what production does. Check with `curl -sI -H "Range: bytes=0-99" https://<site>/video/hero-16x9.mp4`. If it returns 200, serve `/video/*` from R2 or a small Worker instead.
+- **Deploy (Cloudflare):** live at https://barry-design.adam-04d.workers.dev (Hear Hear's account), first deployed 2026-10-12. Redeploy with `npm run deploy` after `npx wrangler login`.
+  - `wrangler.jsonc` serves `dist/` as static assets and answers unknown paths with `index.html`, so deep links and `/?category=` links work.
+  - Static assets ignore byte-range requests (checked in production: always 200, the whole file), and iPhone Safari won't play video without 206 responses. So a small Worker (`worker/index.js`) runs only for `/video/*`: it answers range requests with 206 and the requested bytes, and 404s missing videos.
+  - `public/.assetsignore` keeps macOS `.DS_Store` files out of the upload.
+  - **After each deploy**, check `curl -s -D - -o /dev/null -H "Range: bytes=0-1" https://barry-design.adam-04d.workers.dev/video/hero-9x16.mp4`. It should return `206`, with `Content-Range: bytes 0-1/…`.
+  - If the site moves to Yousef's own Cloudflare account or a custom domain, deploy there and update this note.
 - **Phase A's deferred items:** all fixed on 2026-10-12.
   - One not-found page now serves unknown paths, projects and categories, with ways back.
   - The work filter lives in the URL (`/?category=retail`). It survives Back (which lands on the list), reloads and shared links.
