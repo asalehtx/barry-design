@@ -40,7 +40,8 @@ Everything is merged to `main`, which is the only branch.
 - **Deploy:** push to `main`. Cloudflare Workers Builds is connected to the repo and runs `npm test && npm run build`, then `npx wrangler deploy`. If a test fails, nothing deploys and the live site stays as it was. Build logs are under the Worker's **Deployments** tab in the Cloudflare dashboard, and each commit gets a check on GitHub.
 - **Dropped builds:** Cloudflare received 4 of the 9 pushes on 2026-10-13 but never built them. GitHub shows the Cloudflare check as "queued" indefinitely, and the commit never appears under **Deployments**. The dashboard shows no warning, the build settings are unchanged, and the Cloudflare GitHub app is still installed.
   - `50de036` and `a6b4128`: an empty commit (`git commit --allow-empty`) then got a normal build both times.
-  - `732aba5` and its empty commit `f7b77b3`: still unbuilt hours later, and left that way. `732aba5` only changed this file and `f7b77b3` is empty, so the live site (deployed 14:24 UTC) was already current.
+  - `732aba5` and its empty commit `f7b77b3`: never built. `732aba5` only changed this file and `f7b77b3` is empty, so the live site (deployed 14:24 UTC) stayed current.
+  - Builds then recovered on their own: the next push, `cc0b901`, built and deployed normally at 17:27 UTC and included both commits' changes.
   - **If a push isn't built within about 5 minutes:** try one empty commit. If that isn't built either, deploy by hand with `npm run deploy`, and report the commit IDs to Cloudflare support if it keeps happening.
   - **On the next real change,** check it actually deploys: the commit should appear under **Deployments**, and for a code change the live JavaScript filename should change.
   - A GitHub Actions deploy was considered and turned down in favour of staying on Workers Builds.
