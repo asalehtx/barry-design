@@ -1,0 +1,4 @@
+# Dev-only tools for the hero reel (tracing, posters, render checks). Never shipped with the site.
+numpy==2.5.3
+opencv-python-headless==4.14.0.94
+pillow==12.2.0

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { REEL, REEL_FRAMES, REEL_SECONDS, segmentIndexAt } from './heroReel'
 import { findProject } from './projects'
@@ -48,4 +48,24 @@ describe('segmentIndexAt', () => {
   it('treats negative times as wrapped', () => {
     expect(segmentIndexAt(-0.5)).toBe(2)
   })
+})
+
+describe('curated traces', () => {
+  it.each(REEL.segments.flatMap((s) => Object.keys(REEL.formats).map((f) => [s.projectId, f])))(
+    '%s %s exists, matches the composition size and has 30-70 lines',
+    (projectId, format) => {
+      const path = join(process.cwd(), 'reel', 'traces', `${projectId}-${format}.json`)
+      expect(existsSync(path)).toBe(true)
+      const trace = JSON.parse(readFileSync(path, 'utf8'))
+      expect([trace.width, trace.height]).toEqual([REEL.formats[format].width, REEL.formats[format].height])
+      expect(trace.lines.length).toBeGreaterThanOrEqual(30)
+      expect(trace.lines.length).toBeLessThanOrEqual(70)
+      for (const [x1, y1, x2, y2] of trace.lines) {
+        for (const [v, max] of [[x1, trace.width], [y1, trace.height], [x2, trace.width], [y2, trace.height]]) {
+          expect(v).toBeGreaterThanOrEqual(0)
+          expect(v).toBeLessThanOrEqual(max)
+        }
+      }
+    },
+  )
 })

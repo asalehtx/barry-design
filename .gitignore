@@ -25,3 +25,7 @@ dist-ssr
 
 # Tool caches
 .impeccable/
+
+# Hero reel tooling
+reel/.venv/
+reel/out/
