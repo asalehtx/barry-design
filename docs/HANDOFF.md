@@ -38,7 +38,12 @@ Everything is merged to `main`, which is the only branch.
 
 - **Where:** https://barry-design.adam-04d.workers.dev, a Cloudflare Worker named `barry-design` in Hear Hear's account (adam@hearhear.agency).
 - **Deploy:** push to `main`. Cloudflare Workers Builds is connected to the repo and runs `npm test && npm run build`, then `npx wrangler deploy`. If a test fails, nothing deploys and the live site stays as it was. Build logs are under the Worker's **Deployments** tab in the Cloudflare dashboard, and each commit gets a check on GitHub.
-- **Dropped builds:** on 2026-10-13 Cloudflare received 2 of 6 pushes (`50de036`, `a6b4128`) but never built them. GitHub showed the Cloudflare check as "queued" indefinitely, and the commit never appeared under **Deployments**. Pushing an empty commit (`git commit --allow-empty`) got a normal build both times. A GitHub Actions deploy was considered and turned down in favour of staying on Workers Builds.
+- **Dropped builds:** Cloudflare received 4 of the 9 pushes on 2026-10-13 but never built them. GitHub shows the Cloudflare check as "queued" indefinitely, and the commit never appears under **Deployments**. The dashboard shows no warning, the build settings are unchanged, and the Cloudflare GitHub app is still installed.
+  - `50de036` and `a6b4128`: an empty commit (`git commit --allow-empty`) then got a normal build both times.
+  - `732aba5` and its empty commit `f7b77b3`: still unbuilt hours later, and left that way. `732aba5` only changed this file and `f7b77b3` is empty, so the live site (deployed 14:24 UTC) was already current.
+  - **If a push isn't built within about 5 minutes:** try one empty commit. If that isn't built either, deploy by hand with `npm run deploy`, and report the commit IDs to Cloudflare support if it keeps happening.
+  - **On the next real change,** check it actually deploys: the commit should appear under **Deployments**, and for a code change the live JavaScript filename should change.
+  - A GitHub Actions deploy was considered and turned down in favour of staying on Workers Builds.
 - **Manual deploy:** run `npx wrangler login` once, then `npm run deploy` (it builds, then runs `wrangler deploy`). The next push to `main` replaces it.
 - **Pages:** `wrangler.jsonc` serves `dist/` as static assets. Any path that isn't a file gets `index.html` with a 200, so `/project/<id>`, `/category/<slug>`, `/?category=<slug>` and unknown paths all load the app. Unknown paths then show the app's own not-found page.
 - **Videos:** Cloudflare's static assets ignore byte-range requests; in production they always returned 200 and the whole file. iPhone Safari won't play video without 206 responses. So `worker/index.js` runs only for `/video/*`:
