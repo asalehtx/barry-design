@@ -30,7 +30,6 @@ Everything is merged to `main`, which is the only branch.
    - Instagram, Facebook and LinkedIn URLs (`SOCIAL_LINKS` in `src/App.jsx`).
 5. **Optional:**
    - An AI upscale of `omg-burger-1.jpg`. Its 9:16 cut is upscaled about 19%. At full size it looked only mildly soft, so this isn't needed now.
-   - `npm audit` lists 8 warnings. All are in build and test tooling (Vite and PostCSS, ESLint, jsdom, Babel), and none ship to visitors. `react-router` was upgraded to 7.18.4 on 2026-10-12, which cleared its advisories.
 
 ## Live site
 
@@ -85,6 +84,7 @@ Everything is merged to `main`, which is the only branch.
   - Remotion 4.0.529 and Wrangler 4.149.0.
   - The Python tools use `opencv-python-headless==4.14.0.94`, `numpy==2.5.3` and `pillow==12.2.0`, in `reel/.venv` (git-ignored). Create it with `python3 -m venv reel/.venv && reel/.venv/bin/pip install -r reel/tools/requirements.txt`.
 - **Compatibility date:** `2026-10-06` in `wrangler.jsonc`, the newest date the pinned Wrangler's local runtime supports, so `wrangler dev` matches production.
+- **Security:** `npm audit` reports 0 warnings as of 2026-10-12, after react-router 7.18.4 and an `npm audit fix` that took Vite to 8.3.4.
 - **ffmpeg:**
   - No system ffmpeg is needed, because Remotion bundles `ffmpeg` and `ffprobe` (`npx remotion ffmpeg`).
   - Its build has no WebP encoder, no `rawvideo` muxer and no `select` filter. That's why posters go through Pillow and the seam check seeks by time.
