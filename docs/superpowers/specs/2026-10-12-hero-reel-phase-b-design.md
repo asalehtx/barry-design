@@ -30,14 +30,15 @@ Each segment is 5.0s (150 frames). Times below are relative to the segment's sta
 | 2 | 5.0–10.0s | OMG Burger (`omg-burger`) | `omg-burger-1.jpg` |
 | 3 | 10.0–15.0s | Haii Keii (`haii-keii`) | `haii-keii-3.jpg` |
 
-**Seamless loop:** frame 449 and frame 0 are both the dark ground with no visible lines or photo. The mean absolute per-pixel difference between them must be below 1%.
+**Seamless loop:** frame 449 and frame 0 are both the dark ground with no visible lines or photo. The mean absolute per-pixel difference between them must be below 1%. Because of this, XO's lines start at frame 0 rather than 0.3s early on the wrap from Haii Keii.
 
 **Corner badge (HTML, not in the video):** "XO Juice and Studio →", linking to the project page.
 - **Position:** bottom-right of the hero on desktop; top-right under the nav at ≤ 768px.
 - **Timing:** switches at 0s, 5s and 10s with a 400ms fade, driven by the video's `timeupdate` events (accuracy about 250ms).
 - **Accessibility:** it is a real link, but it is not an `aria-live` region, so changes aren't announced.
 - **Static cases:** when only the poster shows, the badge names XO and doesn't change.
-- **Layout:** the vertical "scroll" label is removed from the hero to free the corner.
+- **Layout:** the vertical "scroll" label is removed from the hero to free the corner. The badge moves to the top-right up to 1024px, and drops its "Now showing" label at ≤ 480px.
+- **Pause control (WCAG 2.2.2):** a 44px pause/play button sits beside the badge whenever the video is used. It offers Play if autoplay was refused.
 
 ## 3. Sound
 
@@ -67,7 +68,7 @@ None. The background video must be muted to autoplay, so the files carry no audi
   - `navigator.connection.effectiveType` is `slow-2g` or `2g`
 - **Autoplay refused:** if `play()` rejects (for example iOS Low Power Mode), the poster stays and the video stays invisible.
 - **Retired:** the stock building image `public/images/bg-hero-img.jpg` is no longer used by the hero.
-- **Hero gradient, darkened (approved 2026-10-12):** stops 0.95 / 0.65 / 0.35 on desktop and 0.95 / 0.75 / 0.45 at ≤ 768px, so headline text keeps 4.5:1 over the reel's brightest frames (the old gradient measured 2.5–2.7:1).
+- **Hero gradient, darkened (approved 2026-10-12):** stops 0.95 / 0.65 / 0.55 on desktop and 0.95 / 0.75 / 0.45 at ≤ 768px, so headline text keeps 4.5:1 over the reel's brightest frames down to a 1280×720 laptop, where the text reaches the top of the hero (the old gradient measured 2.5–2.7:1).
 - **Unchanged:** the noise overlay and all hero text and buttons.
 
 **Project structure**

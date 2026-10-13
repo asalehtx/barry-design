@@ -10,22 +10,30 @@
 |---|---|---|---|
 | Foundations (contact form, assets, accent colour) | Done, on `main` | — | — |
 | **A — Design polish** | **Done, merged to `main`** (98 tests, lint clean) | deleted after merge | [spec](superpowers/specs/2026-10-12-design-polish-phase-a-design.md), [plan](superpowers/plans/2026-10-12-design-polish-phase-a.md) |
-| **B — Remotion hero reel** | **Spec and plan written; not implemented** | `phase-b-hero-reel` | [spec](superpowers/specs/2026-10-12-hero-reel-phase-b-design.md), [plan](superpowers/plans/2026-10-12-hero-reel-phase-b.md) |
+| **B — Remotion hero reel** | **Implemented on branch, not merged** (153 tests, lint, build, render checks green) | `phase-b-hero-reel` | [spec](superpowers/specs/2026-10-12-hero-reel-phase-b-design.md), [plan](superpowers/plans/2026-10-12-hero-reel-phase-b.md) |
 
 There is no git remote yet, so nothing has been pushed.
 
-## Phase B: waiting on two decisions
+## Phase B: implemented, awaiting merge
 
-1. **Darker hero gradient.** Measured over the reel's brightest frames, the text behind the headline reached only 2.5–2.7:1 contrast under the current gradient. The plan strengthens it:
-   - Desktop: 0.95 / 0.65 / 0.35, measured at 4.66:1.
-   - Phones: 0.95 / 0.75 / 0.45, measured at 5.25:1.
+Decided 2026-10-12: darker hero gradient (not a dimmed reel), executed natively with one final review.
 
-   This contradicts the spec's "gradient unchanged" line. The alternative is dimming the reel itself to about 60% brightness.
-2. **Execution method:** native (recommended: one session plus a final review) or subagent-driven.
+**Final review fixes** (beyond the plan):
+- **Laptop contrast.** The plan's contrast check only modelled a 1920×1080 layout. At 1280×720 the headline reaches the top of the hero, where it measured 3.45:1. The check now covers the shortest layouts, and the desktop gradient's top stop went from 0.35 to 0.55 (worst case now 4.98:1). Phones were already fine (5.15:1).
+- **Pause control** (WCAG 2.2.2): a 44px pause/play button beside the badge. It offers Play if autoplay was refused.
+- **Badge** keeps keyboard focus when the project changes. It moves top-right up to 1024px and drops its "Now showing" label at ≤ 480px.
+- **Poster preload** in `index.html`, one per viewport.
 
-Once both are answered, execute the plan on `phase-b-hero-reel`. Every code block in it was run in a scratch build, where the finished state passed 147 tests, lint and build, and every render check. That scratch copy was temporary; the plan holds all the code.
+**Still to do:**
+- **Merge:** `phase-b-hero-reel` into `main`.
+- **Reduce motion:** a real check with macOS **Reduce motion** on (see below).
+- **Deferred minors** from the review:
+  - Traces can go stale silently if an image, its focus or the trace settings change without re-running `trace.py`.
+  - `check_renders.py` doesn't assert codec names or the MP4 atom order.
+  - `trace.py` clamps x and y separately rather than clipping the line.
+  - XO's 9:16 trace has 32 lines, against the spec's "about 40–80".
 
-### What the plan builds
+### What was built
 - **Linework:** an offline OpenCV tracer (`reel/tools/trace.py`) curates straight architectural lines from three renders: XO 2, OMG Burger 1 and Haii Keii 3.
 - **Reel:** a Remotion project in `reel/` renders a 15s, 30fps loop at 1920×1080 and 720×1280, as MP4 and WebM, plus WebP posters, all into `public/video/`.
 - **Site:** the hero shows a `<picture>` poster plus a `<video>` with sources chosen once at mount. Reduced-motion, reduced-data, Data Saver and slow-2g visitors get the poster only and download no video. A corner badge links to the space on screen.
@@ -53,7 +61,7 @@ Once both are answered, execute the plan on `phase-b-hero-reel`. Every code bloc
   - The carousel key-reset test uses its own route wrapper.
   - The filter is lost after Back.
   - The "Also in progress" heading reads oddly when nothing precedes it.
-- **Possible Phase B follow-up:** an AI upscale of `omg-burger-1.jpg` if the 9:16 cut looks soft (it's upscaled about 19%).
+- **Possible Phase B follow-up:** an AI upscale of `omg-burger-1.jpg`. Its 9:16 cut is upscaled about 19%; at full size it looked only mildly soft, so this isn't needed now.
 
 ## How to run
 ```bash
