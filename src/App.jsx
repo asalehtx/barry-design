@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { BrowserRouter, Routes, Route, Link, useParams, useLocation, useSearchParams } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, useParams, useLocation, useSearchParams } from "react-router";
 import "./styles/index.css";
 import {
   ALL_PROJECTS,

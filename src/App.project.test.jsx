@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { fireEvent, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router'
 import { ProjectDetailRoute } from './App'
 import { PROCUREMENT_COPY, PROJECTS } from './data/projects'
 import { renderAt } from './test/render'

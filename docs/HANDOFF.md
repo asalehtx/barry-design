@@ -84,7 +84,7 @@ Everything is merged to `main`, which is the only branch.
   - Remotion 4.0.535 (the reel and the root must match; a test checks) and Wrangler 4.149.0. The shipped videos were rendered with 4.0.529; a 4.0.535 render looked the same (about 40 dB PSNR, all render checks passing), so they weren't replaced.
   - The Python tools use `opencv-python-headless==4.14.0.94`, `numpy==2.5.3` and `pillow==12.2.0`, in `reel/.venv` (git-ignored). Create it with `python3 -m venv reel/.venv && reel/.venv/bin/pip install -r reel/tools/requirements.txt`.
 - **Compatibility date:** `2026-10-06` in `wrangler.jsonc`, the newest date the pinned Wrangler's local runtime supports, so `wrangler dev` matches production.
-- **Security:** `npm audit` reports 0 warnings as of 2026-10-12, after react-router 7.18.4 and an `npm audit fix` that took Vite to 8.3.4.
+- **Security:** `npm audit` reports 0 warnings as of 2026-10-13, after React Router 8.4.0 (which replaces `react-router-dom`) and an `npm audit fix` that took Vite to 8.3.4.
 - **ffmpeg:**
   - No system ffmpeg is needed, because Remotion bundles `ffmpeg` and `ffprobe` (`npx remotion ffmpeg`).
   - Its build has no WebP encoder, no `rawvideo` muxer and no `select` filter. That's why posters go through Pillow and the seam check seeks by time.
