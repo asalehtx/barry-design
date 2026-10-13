@@ -4,14 +4,17 @@ Run from the repo root after rendering:
     reel/.venv/bin/python -I reel/tools/check_renders.py
 
 1. Renders sample stills of both compositions into reel/out/stills/ (PNG) for viewing.
-2. Seam: frame 449 vs frame 0, mean absolute per-pixel difference < 1%.
+2. Seam: frame 449 vs frame 0, mean absolute per-pixel difference < 1%, in the stills and in
+   frames decoded from every shipped video.
 3. Headline contrast: each still, composited with the page's hero gradient, keeps paper-coloured
    text at 85% opacity at >= 4.5:1 against the brightest 2% of the text region.
-4. ffprobe: 15.0s +/- 1 frame, 30 fps, exact dimensions, no audio, yuv420p.
+4. ffprobe: H.264 (MP4) or VP9 (WebM), 15.0s +/- 1 frame, 30 fps, exact dimensions, no audio,
+   yuv420p. MP4s must be fast-start (moov before mdat) so playback can begin while downloading.
 5. File sizes within budget, posters included.
 Exits non-zero on any failure.
 """
 import json
+import struct
 import subprocess
 import sys
 from pathlib import Path
@@ -37,6 +40,7 @@ BUDGET = {
     "hero-9x16.mp4": 1.2e6, "hero-9x16.webm": 1.2e6,
     "hero-poster-16x9.webp": 150e3, "hero-poster-9x16.webp": 80e3,
 }
+CODEC = {"mp4": "h264", "webm": "vp9"}
 INK = np.array([18, 18, 18], dtype=float)
 PAPER = np.array([244, 240, 234], dtype=float)
 
@@ -80,6 +84,34 @@ def check_seam(fmt):
         fail(f"seam {fmt} differs by {diff:.2%}")
 
 
+def decoded_frame(path, frame):
+    """Decode one frame of a shipped video to an RGB array with Remotion's ffmpeg. Its build has
+    neither the rawvideo muxer nor the select filter, so this seeks by time (output-side -ss
+    drops every earlier frame exactly) and writes a PNG into reel/out/decoded/."""
+    out = REEL / "out" / "decoded" / f"{path.name}-{frame}.png"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.unlink(missing_ok=True)
+    # Aim a third of a frame early so rounding can't land on the next frame.
+    start = max(0.0, (frame - 1 / 3) / 30)
+    subprocess.run(
+        ["npx", "remotion", "ffmpeg", "-v", "error", "-i", str(path), "-ss", f"{start:.4f}",
+         "-frames:v", "1", str(out)],
+        cwd=REEL, check=True,
+    )
+    return np.asarray(Image.open(out).convert("RGB"), dtype=float)
+
+
+def check_shipped_seams():
+    for fmt in FORMATS:
+        for ext in CODEC:
+            path = VIDEO / f"hero-{fmt}.{ext}"
+            first, last = decoded_frame(path, 0), decoded_frame(path, 449)
+            diff = np.abs(last - first).mean() / 255
+            print(f"seam {path.name}: {diff:.4%}")
+            if diff >= 0.01:
+                fail(f"seam {path.name} differs by {diff:.2%}")
+
+
 def check_contrast(fmt):
     w, h = FORMATS[fmt]
     x0, y0, x1, y1 = TEXT_REGION[fmt]
@@ -109,6 +141,22 @@ def probe(path):
     return json.loads(out[out.index("{"):])
 
 
+def top_level_atoms(data):
+    """Names of the top-level boxes of an MP4, in file order."""
+    names, pos = [], 0
+    while pos + 8 <= len(data):
+        size, kind = struct.unpack(">I4s", data[pos:pos + 8])
+        if size == 1:
+            size = struct.unpack(">Q", data[pos + 8:pos + 16])[0]
+        elif size == 0:
+            size = len(data) - pos
+        names.append(kind.decode("latin-1"))
+        if size < 8:
+            break
+        pos += size
+    return names
+
+
 def check_videos():
     for fmt, (w, h) in FORMATS.items():
         for ext in ("mp4", "webm"):
@@ -131,6 +179,13 @@ def check_videos():
                 fail(f"{path.name} has an audio stream")
             if v.get("pix_fmt") != "yuv420p":
                 fail(f"{path.name} pixel format {v.get('pix_fmt')}")
+            if v["codec_name"] != CODEC[ext]:
+                fail(f"{path.name} is {v['codec_name']}, expected {CODEC[ext]}")
+            if ext == "mp4":
+                atoms = top_level_atoms(path.read_bytes())
+                print(f"{path.name}: atoms {' '.join(atoms)}")
+                if "moov" not in atoms or "mdat" not in atoms or atoms.index("moov") > atoms.index("mdat"):
+                    fail(f"{path.name} is not fast-start (atoms {atoms})")
 
 
 def check_sizes():
@@ -146,6 +201,7 @@ if __name__ == "__main__":
     for fmt in FORMATS:
         check_seam(fmt)
         check_contrast(fmt)
+    check_shipped_seams()
     check_videos()
     check_sizes()
     print("ALL CHECKS PASSED" if not failures else f"{len(failures)} CHECK(S) FAILED")

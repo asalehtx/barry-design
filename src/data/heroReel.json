@@ -47,7 +47,7 @@
         },
         "9x16": {
           "maxLines": 50,
-          "minLength": 0.05,
+          "minLength": 0.035,
           "exclude": [
             [
               0.35,

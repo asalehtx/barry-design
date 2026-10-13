@@ -4,8 +4,8 @@ Run from the repo root with the trace virtualenv:
     reel/.venv/bin/python -I reel/tools/trace.py [--preview]
 
 Reads src/data/heroReel.json. For every segment and format it crops the image exactly as the
-reel does (cover + focus), detects line segments, merges collinear pieces, drops excluded
-regions, keeps the longest `maxLines`, and writes:
+reel does (cover + focus), detects line segments, merges collinear pieces, cuts
+them at the frame edge, drops excluded regions, keeps the longest `maxLines`, and writes:
     reel/traces/<projectId>-<format>.json   consumed by the Remotion composition
     reel/traces/<projectId>-<format>.svg    for viewing the linework on its own
 With --preview it also writes reel/out/trace-<projectId>-<format>.png (lines over the photo).
@@ -110,6 +110,27 @@ def drop_near_duplicates(segments, angle_tol=math.radians(3), dist_tol=10.0):
     return kept
 
 
+def clip_to_frame(seg, width, height):
+    """Cut a segment to the frame along its own direction (Liang-Barsky), so an end that merging
+    pushed past an edge is shortened rather than bent. None when nothing is left inside."""
+    x1, y1, x2, y2 = seg
+    dx, dy = x2 - x1, y2 - y1
+    t0, t1 = 0.0, 1.0
+    for p, q in ((-dx, x1), (dx, width - x1), (-dy, y1), (dy, height - y1)):
+        if p == 0:
+            if q < 0:
+                return None
+            continue
+        t = q / p
+        if p < 0:
+            t0 = max(t0, t)
+        else:
+            t1 = min(t1, t)
+        if t0 > t1:
+            return None
+    return (x1 + t0 * dx, y1 + t0 * dy, x1 + t1 * dx, y1 + t1 * dy)
+
+
 def inside(seg, rect, width, height):
     """True when the segment's midpoint falls inside a normalised [x0, y0, x1, y1] rect."""
     cx, cy = (seg[0] + seg[2]) / 2 / width, (seg[1] + seg[3]) / 2 / height
@@ -118,21 +139,21 @@ def inside(seg, rect, width, height):
 
 def curate(segments, width, height, trace):
     diag = math.hypot(width, height)
-    kept = [s for s in segments if length_of(s) >= trace["minLength"] * diag]
+    clipped = [c for c in (clip_to_frame(s, width, height) for s in segments) if c is not None]
+    kept = [s for s in clipped if length_of(s) >= trace["minLength"] * diag]
     kept = [s for s in kept if not any(inside(s, r, width, height) for r in trace["exclude"])]
     kept = drop_near_duplicates(kept)  # drafting order: structure first, detail last
     return kept[: trace["maxLines"]]
 
 
-def write_outputs(seg_id, fmt, width, height, lines, photo, preview):
-    # Merging can push an end a few px past the frame edge; clamp back inside it.
-    rounded = [
-        [round(min(max(v, 0), width if i % 2 == 0 else height), 1) for i, v in enumerate(line)]
-        for line in lines
-    ]
+def write_outputs(seg_id, fmt, width, height, lines, source, photo, preview):
+    rounded = [[round(v, 1) + 0.0 for v in line] for line in lines]  # + 0.0 turns -0.0 into 0.0
     TRACES.mkdir(parents=True, exist_ok=True)
+    # `source` records what the trace was made from, so a test can tell when it is stale.
     (TRACES / f"{seg_id}-{fmt}.json").write_text(
-        json.dumps({"width": width, "height": height, "lines": rounded}, separators=(",", ":")) + "\n"
+        json.dumps(
+            {"width": width, "height": height, "source": source, "lines": rounded}, separators=(",", ":")
+        ) + "\n"
     )
     paths = "\n".join(
         f'  <line x1="{l[0]}" y1="{l[1]}" x2="{l[2]}" y2="{l[3]}"/>' for l in rounded
@@ -165,7 +186,8 @@ def main(preview):
             photo = cover_crop(img, w, h, seg["focus"][fmt])
             gray = cv2.cvtColor(photo, cv2.COLOR_BGR2GRAY)
             lines = curate(merge_collinear(detect(gray)), w, h, seg["trace"][fmt])
-            write_outputs(seg["projectId"], fmt, w, h, lines, photo, preview)
+            source = {"image": seg["image"], "focus": seg["focus"][fmt], "settings": seg["trace"][fmt]}
+            write_outputs(seg["projectId"], fmt, w, h, lines, source, photo, preview)
             print(f"{seg['projectId']} {fmt}: {len(lines)} lines")
 
 

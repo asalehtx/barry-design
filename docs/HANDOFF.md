@@ -26,11 +26,11 @@ Decided 2026-10-12: darker hero gradient (not a dimmed reel), executed natively 
 
 **Still to do:**
 - **Reduce motion:** a real check with macOS **Reduce motion** on (see below).
-- **Deferred minors** from the review:
-  - Traces can go stale silently if an image, its focus or the trace settings change without re-running `trace.py`.
-  - `check_renders.py` doesn't assert codec names or the MP4 atom order.
-  - `trace.py` clamps x and y separately rather than clipping the line.
-  - XO's 9:16 trace has 32 lines, against the spec's "about 40–80".
+- **Deferred minors** from the review: all four fixed on 2026-10-12.
+  - Each trace now records the image, focus and settings it was made from, and a test fails if any of them change without re-running `trace.py`.
+  - `check_renders.py` now checks codecs, MP4 fast-start, and the loop seam in frames decoded from each shipped video.
+  - `trace.py` cuts lines at the frame edge instead of bending them.
+  - XO's 9:16 trace now has 46 lines, and the test enforces the spec's 40–80.
 
 ### What was built
 - **Linework:** an offline OpenCV tracer (`reel/tools/trace.py`) curates straight architectural lines from three renders: XO 2, OMG Burger 1 and Haii Keii 3.

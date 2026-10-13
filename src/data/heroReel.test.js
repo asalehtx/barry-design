@@ -52,20 +52,35 @@ describe('segmentIndexAt', () => {
 
 describe('curated traces', () => {
   it.each(REEL.segments.flatMap((s) => Object.keys(REEL.formats).map((f) => [s.projectId, f])))(
-    '%s %s exists, matches the composition size and has 30-70 lines',
+    '%s %s exists, matches the composition size and has 40-80 lines (spec §1)',
     (projectId, format) => {
       const path = join(process.cwd(), 'reel', 'traces', `${projectId}-${format}.json`)
       expect(existsSync(path)).toBe(true)
       const trace = JSON.parse(readFileSync(path, 'utf8'))
       expect([trace.width, trace.height]).toEqual([REEL.formats[format].width, REEL.formats[format].height])
-      expect(trace.lines.length).toBeGreaterThanOrEqual(30)
-      expect(trace.lines.length).toBeLessThanOrEqual(70)
+      expect(trace.lines.length).toBeGreaterThanOrEqual(40)
+      expect(trace.lines.length).toBeLessThanOrEqual(80)
       for (const [x1, y1, x2, y2] of trace.lines) {
         for (const [v, max] of [[x1, trace.width], [y1, trace.height], [x2, trace.width], [y2, trace.height]]) {
           expect(v).toBeGreaterThanOrEqual(0)
           expect(v).toBeLessThanOrEqual(max)
         }
       }
+    },
+  )
+
+  // Traced from the current image, crop and settings: change any of them in heroReel.json
+  // and this fails until reel/tools/trace.py is re-run.
+  it.each(REEL.segments.flatMap((s) => Object.keys(REEL.formats).map((f) => [s.projectId, f, s])))(
+    '%s %s was traced from the current image, focus and settings',
+    (projectId, format, segment) => {
+      const path = join(process.cwd(), 'reel', 'traces', `${projectId}-${format}.json`)
+      const trace = JSON.parse(readFileSync(path, 'utf8'))
+      expect(trace.source).toEqual({
+        image: segment.image,
+        focus: segment.focus[format],
+        settings: segment.trace[format],
+      })
     },
   )
 })

@@ -29,3 +29,4 @@ dist-ssr
 # Hero reel tooling
 reel/.venv/
 reel/out/
+reel/tools/__pycache__/

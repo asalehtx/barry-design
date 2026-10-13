@@ -28,6 +28,8 @@ reel/.venv/bin/python -I reel/tools/check_renders.py
 - `trace.py`: detects and curates the linework into `reel/traces/`. With `--preview`, it also writes overlays to `reel/out/`.
 - `render`: writes the four videos to `public/video/`.
 - `posters.py`: writes the two WebP posters to `public/video/`.
-- `check_renders.py`: checks the loop seam, headline contrast, formats and file sizes.
+- `check_renders.py`: checks the loop seam (in stills and in frames decoded from each shipped video), headline contrast, codecs, MP4 fast-start, formats and file sizes.
+
+Each trace JSON records the image, focus and settings it was made from, so the site's test suite fails if `heroReel.json` changes without re-running `trace.py`. The tools' own unit tests run with `reel/.venv/bin/python -I reel/tools/test_tools.py`.
 
 Preview the reel in the browser with `npm --prefix reel run studio`.
