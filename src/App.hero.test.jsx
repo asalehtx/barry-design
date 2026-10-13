@@ -89,10 +89,40 @@ describe('hero badge', () => {
     expect(badge()).toHaveAttribute('href', '/project/xo-juice-and-studio')
   })
 
+  it('keeps keyboard focus on the badge when the project changes', () => {
+    renderHome()
+    badge().focus()
+    at(5.1)
+    expect(badge()).toHaveAttribute('href', '/project/omg-burger')
+    expect(badge()).toHaveFocus()
+  })
+
   it('stays on XO when only the poster shows', () => {
     matchOnly('(prefers-reduced-motion: reduce)')
     renderHome()
     expect(badge()).toHaveAttribute('href', '/project/xo-juice-and-studio')
+  })
+})
+
+describe('hero pause control', () => {
+  const pauseButton = () => screen.getByRole('button', { name: /pause background video/i })
+
+  it('pauses the reel, then plays it again', () => {
+    renderHome()
+    const { pause, play } = window.HTMLMediaElement.prototype
+    play.mockClear()
+    fireEvent.click(pauseButton())
+    expect(pause).toHaveBeenCalledTimes(1)
+    const playButton = screen.getByRole('button', { name: /play background video/i })
+    fireEvent.click(playButton)
+    expect(play).toHaveBeenCalledTimes(1)
+    expect(pauseButton()).toBeInTheDocument()
+  })
+
+  it('is absent when only the poster shows', () => {
+    matchOnly('(prefers-reduced-motion: reduce)')
+    renderHome()
+    expect(screen.queryByRole('button', { name: /background video/i })).toBeNull()
   })
 })
 

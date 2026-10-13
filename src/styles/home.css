@@ -17,11 +17,11 @@
 .bd-hero-video { opacity: 0; transition: opacity 0.6s ease; }
 .bd-hero-video.is-playing { opacity: 1; }
 
-/* Stops measured against the reel's brightest frames for >= 4.5:1 text contrast
-   (reel/tools/check_renders.py mirrors these values). */
+/* Stops measured against the reel's brightest frames for >= 4.5:1 text contrast, down to
+   1280x720 where the text reaches the top of the hero (reel/tools/check_renders.py mirrors these). */
 .bd-hero-gradient {
   position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(to top, rgba(18, 18, 18, 0.95) 0%, rgba(18, 18, 18, 0.65) 50%, rgba(18, 18, 18, 0.35) 100%);
+  background: linear-gradient(to top, rgba(18, 18, 18, 0.95) 0%, rgba(18, 18, 18, 0.65) 50%, rgba(18, 18, 18, 0.55) 100%);
 }
 .bd-hero-noise {
   position: absolute; inset: 0; pointer-events: none; opacity: 0.03;
@@ -33,20 +33,35 @@
   background: linear-gradient(to bottom, transparent, rgba(244, 240, 234, 0.1) 20%, rgba(244, 240, 234, 0.1) 80%, transparent);
 }
 
-/* Names the space on screen; re-keyed per project so each name fades in. */
-.bd-hero-badge {
+/* Badge and pause button share one corner above the reel. */
+.bd-hero-controls {
   position: absolute; right: var(--gutter); bottom: 5rem; z-index: 3;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.bd-hero-pause {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; padding: 0;
+  color: var(--paper); cursor: pointer;
+  background: rgba(18, 18, 18, 0.6);
+  border: 1px solid rgba(244, 240, 234, 0.3);
+  transition: border-color 0.2s;
+}
+.bd-hero-pause:hover { border-color: var(--paper); }
+
+/* Names the space on screen. The link itself stays put (so focus survives the switch);
+   only the title is re-keyed per project so each name fades in. */
+.bd-hero-badge {
   display: inline-flex; align-items: center; gap: 0.6rem;
   min-height: 44px; padding: 0 1rem;
   font-size: 0.8rem; letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--paper); text-decoration: none;
   background: rgba(18, 18, 18, 0.6);
   border: 1px solid rgba(244, 240, 234, 0.3);
-  animation: bdFadeIn 0.4s ease both;
   transition: border-color 0.2s;
 }
 .bd-hero-badge:hover { border-color: var(--paper); }
 .bd-hero-badge-label { color: rgba(244, 240, 234, 0.8); }
+.bd-hero-badge-title { animation: bdFadeIn 0.4s ease both; }
 .bd-hero-eyebrow {
   font-size: 0.88rem; letter-spacing: 0.2em; text-transform: uppercase;
   color: rgba(244, 240, 234, 0.85); margin-bottom: 1.5rem;
@@ -298,12 +313,15 @@
   .bd-svc-grid { grid-template-columns: 1fr 1fr; }
   .bd-svc { border-right: none; border-bottom: 1px solid rgba(18, 18, 18, 0.07); }
   .bd-svc:nth-child(odd) { border-right: 1px solid rgba(18, 18, 18, 0.07); }
+
+  /* Below 1025px the hero buttons would run into a bottom-right corner, so the controls move up. */
+  .bd-hero { padding-top: 6rem; }
+  .bd-hero-controls { top: 1rem; bottom: auto; }
 }
 
 @media (max-width: 768px) {
   .bd-hero { min-height: 85vh; min-height: 85svh; padding: 6rem var(--gutter) 4rem; }
   .bd-hero-rule-v { display: none; }
-  .bd-hero-badge { top: 1rem; bottom: auto; }
   .bd-hero-gradient {
     background: linear-gradient(to top, rgba(18, 18, 18, 0.95) 0%, rgba(18, 18, 18, 0.75) 50%, rgba(18, 18, 18, 0.45) 100%);
   }
@@ -339,4 +357,9 @@
   .bd-svc-grid { grid-template-columns: 1fr; }
   .bd-svc { padding: 2rem 0; }
   .bd-svc:nth-child(odd) { border-right: none; }
+}
+
+@media (max-width: 480px) {
+  /* Keeps the badge and pause button on one row; the title alone still names the space. */
+  .bd-hero-badge-label { display: none; }
 }

@@ -194,13 +194,14 @@ const pickHeroSources = () =>
     ? null
     : heroSources(window.matchMedia(PHONE_QUERY).matches);
 
-// Names the space currently on screen and links to it. Re-keyed per project so it fades in.
+// Names the space currently on screen and links to it. The link stays mounted so keyboard
+// focus survives each switch; only the title is re-keyed so the new name fades in.
 function HeroBadge({ segment }) {
   const project = findProject(REEL.segments[segment].projectId);
   return (
-    <Link key={project.id} to={`/project/${project.id}`} className="bd-hero-badge">
+    <Link to={`/project/${project.id}`} className="bd-hero-badge">
       <span className="bd-hero-badge-label">Now showing</span>
-      <span className="bd-hero-badge-title">{project.title}</span>
+      <span key={project.id} className="bd-hero-badge-title">{project.title}</span>
       <span aria-hidden="true">→</span>
     </Link>
   );
@@ -211,11 +212,21 @@ function HeroMedia() {
   const [sources] = useState(pickHeroSources);
   const [isPlaying, setIsPlaying] = useState(false);
   const [segment, setSegment] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    // Autoplay can be refused (e.g. iOS Low Power Mode); the poster then simply stays.
-    videoRef.current?.play()?.catch(() => {});
+    // Autoplay can be refused (e.g. iOS Low Power Mode); the poster then stays and the
+    // button offers Play.
+    videoRef.current?.play()?.catch(() => setIsPaused(true));
   }, []);
+
+  // WCAG 2.2.2: moving content that loops needs a way to stop it.
+  const togglePlayback = () => {
+    const video = videoRef.current;
+    if (isPaused) video.play()?.catch(() => setIsPaused(true));
+    else video.pause();
+    setIsPaused(!isPaused);
+  };
 
   return (
     <>
@@ -241,7 +252,21 @@ function HeroMedia() {
           ))}
         </video>
       )}
-      <HeroBadge segment={segment} />
+      <div className="bd-hero-controls">
+        {sources && (
+          <button
+            type="button"
+            className="bd-hero-pause"
+            aria-label={isPaused ? "Play background video" : "Pause background video"}
+            onClick={togglePlayback}
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" fill="currentColor">
+              {isPaused ? <path d="M3 1.5v11l9-5.5z" /> : <path d="M3 1.5h3v11H3zm5 0h3v11H8z" />}
+            </svg>
+          </button>
+        )}
+        <HeroBadge segment={segment} />
+      </div>
     </>
   );
 }

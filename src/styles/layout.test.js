@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { declarations, parseRules, readStyles } from '../test/css'
 
 const rules = parseRules(Object.values(readStyles()).join('\n'))
@@ -118,7 +120,7 @@ describe('skip-link target', () => {
 describe('hero reel', () => {
   it('darkens the hero enough for text over the reel (stops mirrored in reel/tools/check_renders.py)', () => {
     expect(value('.bd-hero-gradient', 'background')).toBe(
-      'linear-gradient(to top, rgba(18, 18, 18, 0.95) 0%, rgba(18, 18, 18, 0.65) 50%, rgba(18, 18, 18, 0.35) 100%)',
+      'linear-gradient(to top, rgba(18, 18, 18, 0.95) 0%, rgba(18, 18, 18, 0.65) 50%, rgba(18, 18, 18, 0.55) 100%)',
     )
     expect(value('.bd-hero-gradient', 'background', 'max-width: 768px')).toBe(
       'linear-gradient(to top, rgba(18, 18, 18, 0.95) 0%, rgba(18, 18, 18, 0.75) 50%, rgba(18, 18, 18, 0.45) 100%)',
@@ -130,9 +132,32 @@ describe('hero reel', () => {
     expect(value('.bd-hero-video.is-playing', 'opacity')).toBe('1')
   })
 
-  it('puts the badge bottom-right on desktop and top-right on phones, with a 44px target', () => {
-    expect(value('.bd-hero-badge', 'bottom')).toBe('5rem')
-    expect(value('.bd-hero-badge', 'top', 'max-width: 768px')).toBe('1rem')
+  it('puts the badge and pause control bottom-right on desktop and top-right up to 1024px, with 44px targets', () => {
+    expect(value('.bd-hero-controls', 'bottom')).toBe('5rem')
+    expect(value('.bd-hero-controls', 'top', 'max-width: 1024px')).toBe('1rem')
     expect(px(value('.bd-hero-badge', 'min-height'))).toBeGreaterThanOrEqual(44)
+    expect(px(value('.bd-hero-pause', 'width'))).toBeGreaterThanOrEqual(44)
+    expect(px(value('.bd-hero-pause', 'height'))).toBeGreaterThanOrEqual(44)
+  })
+
+  it('clears the top-right controls with extra hero padding up to 1024px', () => {
+    expect(value('.bd-hero', 'padding-top', 'max-width: 1024px')).toBe('6rem')
+  })
+
+  it('drops the "Now showing" label on narrow phones so the controls fit one row', () => {
+    expect(value('.bd-hero-badge-label', 'display', 'max-width: 480px')).toBe('none')
+  })
+})
+
+describe('hero poster preload', () => {
+  const html = readFileSync(join(process.cwd(), 'index.html'), 'utf8')
+  const preloads = [...html.matchAll(/<link rel="preload" as="image"[^>]*>/g)].map((m) => m[0])
+
+  it('preloads exactly one poster per viewport, with non-overlapping media queries', () => {
+    expect(preloads).toHaveLength(2)
+    expect(preloads[0]).toContain('href="/video/hero-poster-9x16.webp"')
+    expect(preloads[0]).toContain('media="(max-width: 768px)"')
+    expect(preloads[1]).toContain('href="/video/hero-poster-16x9.webp"')
+    expect(preloads[1]).toContain('media="(min-width: 769px)"')
   })
 })

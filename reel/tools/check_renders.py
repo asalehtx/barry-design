@@ -27,9 +27,11 @@ STILLS = REEL / "out" / "stills"
 FRAMES = [0, 24, 48, 63, 78, 100, 132, 141, 147, 175, 263, 325, 413, 449]
 FORMATS = {"16x9": (1920, 1080), "9x16": (720, 1280)}
 # The page's hero gradient (bottom, middle, top opacity), mirrored from src/styles/home.css.
-GRADIENT = {"16x9": (0.95, 0.65, 0.35), "9x16": (0.95, 0.75, 0.45)}
-# Region behind the hero text, as fractions of the frame: x0, y0, x1, y1.
-TEXT_REGION = {"16x9": (0.02, 0.30, 0.60, 0.95), "9x16": (0.04, 0.20, 0.96, 0.95)}
+GRADIENT = {"16x9": (0.95, 0.65, 0.55), "9x16": (0.95, 0.75, 0.45)}
+# Region behind the hero text, as fractions of the frame: x0, y0, x1, y1. Measured on the
+# shortest layouts, where the text fills most of the hero: 1280x720 (eyebrow from y 0.073,
+# headline to x 0.70) and a 375x667 phone (eyebrow from y 0.133).
+TEXT_REGION = {"16x9": (0.02, 0.06, 0.70, 0.95), "9x16": (0.04, 0.12, 0.96, 0.95)}
 BUDGET = {
     "hero-16x9.mp4": 2.5e6, "hero-16x9.webm": 2.0e6,
     "hero-9x16.mp4": 1.2e6, "hero-9x16.webm": 1.2e6,
