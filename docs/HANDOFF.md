@@ -3,12 +3,12 @@
 **Client:** Yousef Elbarry, Barry Design Studio (commercial interiors, Houston)
 **Agency:** Hear Hear Agency
 **Live site:** https://barry-design.adam-04d.workers.dev
-**Last updated:** 2026-10-12
+**Last updated:** 2026-10-13
 
 ## Where things stand
 
 Everything is merged to `main`, which is the only branch.
-- **Checks:** 197 site tests and 6 reel-tool tests pass, and lint, build and the reel's render checks are green.
+- **Checks:** 198 site tests and 6 reel-tool tests pass, and lint, build and the reel's render checks are green.
 - **Repo:** https://github.com/asalehtx/barry-design (public). Pushing to `main` deploys the site.
 
 | Work | Status | Docs |
@@ -16,7 +16,8 @@ Everything is merged to `main`, which is the only branch.
 | Foundations (contact form, assets, accent colour) | Done | — |
 | **A — Design polish** | Done, plus its four deferred review items | [spec](superpowers/specs/2026-10-12-design-polish-phase-a-design.md), [plan](superpowers/plans/2026-10-12-design-polish-phase-a.md) |
 | **B — Remotion hero reel** | Done, plus final-review fixes and four deferred minors | [spec](superpowers/specs/2026-10-12-hero-reel-phase-b-design.md), [plan](superpowers/plans/2026-10-12-hero-reel-phase-b.md) |
-| **Hosting** | Live on Cloudflare since 2026-10-12 | [Live site](#live-site) |
+| **Hosting** | Live on Cloudflare since 2026-10-12; deploys on push to `main` | [Live site](#live-site) |
+| **Maintenance** | Every package updated, `npm audit` at 0 (2026-10-12/13) | [Maintenance](#maintenance-2026-10-1213) |
 
 ## Open items
 
@@ -35,6 +36,7 @@ Everything is merged to `main`, which is the only branch.
 
 - **Where:** https://barry-design.adam-04d.workers.dev, a Cloudflare Worker named `barry-design` in Hear Hear's account (adam@hearhear.agency).
 - **Deploy:** push to `main`. Cloudflare Workers Builds is connected to the repo and runs `npm test && npm run build`, then `npx wrangler deploy`. If a test fails, nothing deploys and the live site stays as it was. Build logs are under the Worker's **Deployments** tab in the Cloudflare dashboard, and each commit gets a check on GitHub.
+- **Dropped builds:** on 2026-10-13 Cloudflare received 2 of 6 pushes (`50de036`, `a6b4128`) but never built them. GitHub showed the Cloudflare check as "queued" indefinitely, and the commit never appeared under **Deployments**. Pushing an empty commit (`git commit --allow-empty`) got a normal build both times. A GitHub Actions deploy was considered and turned down in favour of staying on Workers Builds.
 - **Manual deploy:** run `npx wrangler login` once, then `npm run deploy` (it builds, then runs `wrangler deploy`). The next push to `main` replaces it.
 - **Pages:** `wrangler.jsonc` serves `dist/` as static assets. Any path that isn't a file gets `index.html` with a 200, so `/project/<id>`, `/category/<slug>`, `/?category=<slug>` and unknown paths all load the app. Unknown paths then show the app's own not-found page.
 - **Videos:** Cloudflare's static assets ignore byte-range requests; in production they always returned 200 and the whole file. iPhone Safari won't play video without 206 responses. So `worker/index.js` runs only for `/video/*`:
@@ -57,6 +59,17 @@ Everything is merged to `main`, which is the only branch.
 - **Project pages** have a carousel and a next-project link.
 - **One not-found page** serves unknown paths, projects and categories. It has a back link and a link to all projects.
 - **Accessibility:** a 12px text floor, 44px touch targets, a focus ring, a skip link on every page, reduced-motion support, and no horizontal scroll at 375px.
+
+### Maintenance (2026-10-12/13)
+- **Repo and deploys:** the repo went to GitHub and Cloudflare Workers Builds was connected (see [Live site](#live-site)).
+- **Clean-build fix:** the root installs `remotion` at the reel's version, so the reel's beat tests pass when Cloudflare installs only the root packages.
+- **Upgrades:**
+  - Wrangler 4.149.0, with the compatibility date moved to `2026-10-06`.
+  - React 19.3.0. It adds about 9 kB gzipped to the bundle, all from React itself (new built-in features), accepted on 2026-10-13.
+  - React Router 8.4.0. v8 drops `react-router-dom`, so the site imports from `react-router`.
+  - Vite 8.3.4 and the rest of the build tooling (`npm audit fix`), ESLint 10.12, jest-dom 7, Vitest 5.0.4.
+  - Remotion 4.0.535 in the reel and the root. See [Pinned versions](#environment) for why the videos weren't re-rendered.
+- **Clean-up:** the unused `src/backup-5.22.26-App.jsx` was deleted (it's in history at `76011d8`).
 
 ### Phase B — "drawing becomes space" hero reel
 - **Linework:** an offline OpenCV tracer (`reel/tools/trace.py`) curates straight architectural lines from XO 2, OMG Burger 1 and Haii Keii 3.
@@ -87,8 +100,9 @@ Everything is merged to `main`, which is the only branch.
 - **Security:** `npm audit` reports 0 warnings as of 2026-10-13, after React Router 8.4.0 (which replaces `react-router-dom`) and an `npm audit fix` that took Vite to 8.3.4.
 - **ffmpeg:**
   - No system ffmpeg is needed, because Remotion bundles `ffmpeg` and `ffprobe` (`npx remotion ffmpeg`).
-  - Its build has no WebP encoder, no `rawvideo` muxer and no `select` filter. That's why posters go through Pillow and the seam check seeks by time.
-- **Network:** the first Remotion render downloads Chrome Headless Shell.
+  - Its build has no WebP encoder, no `rawvideo` muxer and no `select` or `ssim` filter. That's why posters go through Pillow, the seam check seeks by time, and render comparisons use OpenCV from `reel/.venv`.
+- **Network:** the first render after installing or upgrading Remotion downloads its Chrome Headless Shell (about 171 MB for 4.0.535's Chrome 157).
+- **Rendering:** run renders under `caffeinate -i` (see `reel/README.md`). If the Mac sleeps mid-render, headless Chrome loses its session and the render hangs.
 - **Licence:** Remotion is used under its free licence (Hear Hear has 3 people or fewer).
 
 ## How to run
